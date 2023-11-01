@@ -1,0 +1,936 @@
+`./navbar.html`:
+```html
+<header>
+    <nav>
+        <img src="/img/logo.jpg" alt="Logo" class="logo">
+        <ul>
+            <li class="nav-item"><a href="/index.html">Home</a></li>
+            <li class="nav-item"><a href="/pages/resume.html">Resume</a></li>
+            <li class="nav-item"><a href="/pages/about.html">About</a></li>
+            <li class="nav-item"><a href="/pages/services.html">Services</a></li>
+            <li class="nav-item"><a href="/pages/portfolio.html">Portfolio</a></li>
+            <li class="nav-item"><a href="/pages/contact.html">Contact</a></li>
+            <li class="nav-item"><a href="/pages/testimonials.html">Testimonials</a></li>
+        </ul>
+    </nav>
+</header>```
+
+
+`./index.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | My Professional Website</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">Welcome to My Personal / Professional Website</h1>
+            <div class="intro-content">
+                <a href="/pages/resume.html" class="cta">CLICK HERE TO SEE MY FULL RESUME!</a>
+                <p>This is a place where I showcase my work and services. Feel free to browse around and if you have any questions, don't hesitate to <a href="pages/contact.html">contact me</a>.</p>
+                <p>If you're interested in my coursework, please contact me directly at <a href="mailto:ahugli@uw.edu">ahugli@uw.edu</a>. Due to academic restrictions, I cannot share my completed solutions as that would constitute assisting plagiarism.</p>
+                <p class="highlight">However, you can view my personal work, which is quite relevant and in some cases more complicated than coursework, in my <a href="pages/portfolio.html">Portfolio</a>.</p>
+                <a href="pages/portfolio.html" class="cta">Check out my Portfolio</a>
+            </div>
+        </section>
+
+        <section>
+            <h2>Latest Work on GitHub</h2><br>
+            <a href="https://github.com/alexfacehead/">Visit my Github</a><br>
+            <h2>Compiled Schoolwork</h2><br>
+            <a href="pages/contact.html">Request to View All Schoolwork Here</a><br>
+            <h2>My LinkedIn With Resume</h2><br>
+            <a href="https://www.linkedin.com/in/alex-hugli/">Visit my LinkedIn!</a>
+        </section>
+    </main>    
+
+    <footer>
+        <p>&copy; 2023, Alex Hugli's Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>```
+
+
+`./css/style.css`:
+```css
+/* css/style.css */
+
+/* About */
+
+.intro-content p {
+    font-size: 1.2em;
+}
+
+.intro-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.services-list {
+    text-align: center;
+    list-style: none;
+    padding: 0;
+}
+
+.services-list li {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+/* Services & Portfolio */
+.access-text {
+    font-size: 1.5em;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.intro-title {
+    font-size: 2em;
+    color: #333;
+    margin-top: 2em;
+    text-align: center;
+}
+
+.intro-content {
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 1.2em;
+    text-align: left;
+}
+
+.intro-content p {
+    text-align: center;
+}
+
+.intro-content ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+}
+
+.intro-content ul li {
+    margin-bottom: 1em;
+    text-align: left;
+}
+
+footer {
+    text-align: center;
+    padding: 1em;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e7e7e7;
+}
+
+/* Variables */
+:root {
+    --background-color: #f4f4f4;
+    --primary-color: #333;
+    --secondary-color: #ffffff;
+    --tertiary-color: #f9f9f9;
+    --quaternary-color: #666;
+    --link-color: #0000EE;
+    --completed-color: green;
+    --incomplete-color: red;
+}
+
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.nav-item {
+    font-size: 1.5em; /* Increase the font size */
+    padding: 10px; /* Add some space around the text */
+    border: 1px solid var(--primary-color); /* Add a border around the item */
+    border-radius: 5px; /* Make the border corners round */
+    margin: 5px; /* Add some space between the items */
+}
+
+.nav-item:hover {
+    background-color: var(--quaternary-color); /* Change the background color on hover */
+    color: var(--secondary-color); /* Change the text color on hover */
+}
+
+header {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 10px 0;
+}
+
+header img {
+    height: 100px; /* Increased the logo size */
+}
+
+header nav ul li a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-family: 'Roboto', sans-serif; /* New font */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Transition effect */
+}
+
+header nav ul li a.active {
+    color: var(--secondary-color); /* Darker text color for active state */
+    background-color: var(--quaternary-color); /* Distinct background color for active state */
+    border-bottom: 2px solid var(--secondary-color); /* Underline for active state */
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header nav .logo {
+    height: 100px; /* Adjust the size as needed */
+    margin-right: 0px;
+}
+
+header nav ul {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-grow: 1;
+}
+
+/* Navbar styles */
+#navbar {
+    background-color: #333;
+    overflow: hidden;
+  }
+  
+  #navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #navbar li {
+    float: left;
+  }
+  
+  #navbar a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  #navbar a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+
+/* Main Content Styles */
+main {
+    margin: 20px;
+    text-align: center;
+}
+
+main section {
+    background-color: var(--secondary-color);
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    max-width: 800px;
+}
+
+.intro {
+    text-align: left;
+}
+
+.contact-type {
+    font-weight: bold; /* Make the contact type bold */
+}
+
+.highlight {
+    font-size: 1.2em;
+}
+
+.project-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.project-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--tertiary-color);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+}
+
+.project-name {
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+
+.project-status {
+    font-size: 1em;
+    margin-left: 10px;
+}
+
+.project-status.completed {
+    color: var(--completed-color);
+}
+
+.project-status.incomplete {
+    color: var(--incomplete-color);
+}
+
+.project-description {
+    margin-top: 10px;
+    color: var(--quaternary-color);
+}
+
+.cta {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.cta:hover {
+    background-color: #666;
+}
+
+/* Footer Styles */
+footer {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    text-align: center;
+    padding: 10px 0;
+    margin-top: auto;
+}
+
+footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+/* Resume specific styles */
+/* Resume specific styles */
+.resume {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.resume .left-column, .resume .right-column {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.resume .left-column .logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.left-column {
+    flex: 1;
+    max-width: 45%;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-right: 10px;
+}
+
+.right-column {
+    flex: 1;
+    max-width: 45%;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-left: 10px;
+}
+
+.placeholder-photo {
+    width: 150px;
+    height: 150px;
+    background-color: #ccc;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.contact-info {
+    margin-bottom: 20px;
+}
+
+.skills {
+    margin-bottom: 20px;
+}
+
+.introductory-area {
+    margin-bottom: 20px;
+}
+
+.section-divider {
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+    margin: 20px 0;
+}
+
+/* New styles for formatting */
+h2 {
+    color: #333;
+    border-bottom: 2px solid #333;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 5px;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+}```
+
+
+`./js/main.js`:
+```javascript
+// JavaScript
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Get the button element
+    const button = document.getElementById('myButton');
+
+    // Add a click event listener to the button
+    button.addEventListener('click', (event) => {
+        // Display an alert when the button is clicked
+        alert('Button was clicked!');
+    });
+});```
+
+
+`./app.py`:
+```py
+from flask import Flask, request, jsonify
+import os
+
+app = Flask(__name__, static_url_path='', static_folder='')
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.route('/pages/<page_name>')
+def render_page(page_name):
+    return app.send_static_file(f'pages/{page_name}')
+
+@app.route('/submit-form', methods=['POST'])
+def submit_form():
+    name = request.form['name']
+    email = request.form['email']
+    message = request.form['message']
+
+    with open('logs/contact_form_submissions.txt', 'a') as f:
+        f.write(f'{name}, {email}, {message}\n')
+
+    return jsonify({'message': 'Form data has been received and recorded.'}), 200
+
+if __name__ == '__main__':
+    app.run()```
+
+
+`./pages/resume.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume - Alex Hugli</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="resume">
+    <div class="left-column">
+        <img src="/Users/alexf/dev/website/img/logo.jpg" alt="Logo" class="logo"> 
+      <div class="contact-info">
+        <p>
+          Phone: +1 (425) 260 1346<br>
+          School email: <a href="mailto:ahugli@uw.edu">ahugli@uw.edu</a><br>
+          Alternate school email: <a href="mailto:ahugli@cs.washington.edu">ahugli@cs.washington.edu</a><br>
+          Alternate personal: <a href="mailto:alexanderhugli@hotmail.com">alexanderhugli@hotmail.com</a><br>
+          GitHub: <a href="https://github.com/alexfacehead">github.com/alexfacehead</a><br>
+          Website: <a href="https://ahugli.com">ahugli.com</a>
+        </p>
+      </div>
+      <hr class="section-divider">
+      <div class="skills">
+        <h2>Skills I Am Confident In</h2>
+        <h3 style="text-decoration: underline;">Back End</h3>
+        <ul>
+          <li>Python (Advanced)</li>
+          <li>Java (Advanced)</li>
+          <li>Prompt Engineering (Advanced - Expert)</li>
+          <li>OCaml (Intermediate)</li>
+          <li>LISP (Intermediate)</li>
+          <li>C (Adequate)</li>
+          <li>Intel/AT&T Assembly (Adequate)</li>
+          <li>C++ (Adequate)</li>
+          <li>SQL (Adequate)</li>
+        </ul>
+        <h3 style="text-decoration: underline;">Front End</h3>
+        <ul>
+          <li>JavaScript</li>
+          <li>CSS</li>
+          <li>HTML</li>
+          <li>React and TypeScript</li>
+        </ul>
+        <h3 style="text-decoration: underline;">Tools</h3>
+        <p>git | JUnit | Windows & Unix CLI | PowerShell</p>
+        <h3 style="text-decoration: underline;">Math</h3>
+        <ul>
+          <li>Matrix / Linear Algebra</li>
+          <li>Calculus with Analytical Geometry</li>
+        </ul>
+        <hr class="section-divider">
+      <div class="personal-projects">
+        <h2>Personal Projects</h2>
+        <ul>
+          <li>Vastly Different Kinds of Projects, Some With Recognition, Some Incomplete
+            <h3>List of Personal Projects</h3>
+            <ul>
+              <li>For a full list of my personal projects with details and direct GitHub access, <strong>please access my GitHub at <a href="https://github.com/alexfacehead">github.com/alexfacehead</a></strong>.</li>
+              <li>For a full list of coursework, please contact me directly via email, and I would be happy to share any and all projects I have completed the past 4 years.</li>
+            </ul>
+            <h3>Some Examples Include</h3>
+            <ul>
+              <li>EasyGPT-3.5, AutoGPT (forked and improved upon with website access for large language models, pre-ChatGPT plugins)</li>
+              <li>SimpleChess</li>
+              <li>Conway’s Game of Life implemented in pure C++</li>
+              <a href="../pages/portfolio.html" class="cta">Check out my full Portfolio</a>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <hr class="section-divider">
+      <div class="personal-projects">
+        <h2>Official Red-Teaming of OpenAI Technology</h2>
+        <ul>
+          <h3>Personally-Designed Red-Teaming that I Cannot Share Under Confidentiality of OpenAI<br><br>
+            <li>Penetration Testing of Language Models for the Purpose of Making them Adversarially Safer
+           
+                The general premise of this project was to prove that language models can be exploited for various purposes, such as collecting information on people with very little starting information. Results were submitted to OpenAI.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <hr class="section-divider">
+      </div>
+    </div>
+    <div class="right-column">
+      <div class="introductory-area">
+        <div class="introductory-area">
+            <h1>Alex Hugli</h1>
+            <div class="intro">
+              <h3>I have been passionately developing software for over 7 years. I have a wide variety of experience, and I love working with people! I hope you find my resume compelling, and I hope you are as excited about where artificial intelligence is headed as I am. In my spare time, I enjoy running, meditation, and enhancing interpersonal relationships!</h3>
+              <h3>Take a look at my personal projects to see some of the community contrbtions I've made!</h3></h3>
+            </div>
+          </div>
+      </div>
+      <div class="internship">
+        <h2>Systems Administration Internship</h2>
+        <ul>
+          <li>Systems Administration Intern, Decent Apps Europe, International, June 2022 - September 2022
+            <h3>Main Responsibilities</h3>
+            <ul>
+              <li>Shadow the founders (Niall Halpin of Ireland, <a href="mailto:niall@decentapps.eu">niall@decentapps.eu</a>) and (David Smelt of Netherlands) of an international startup with the goal of designing a decentralized, block-chain based social media platform, monetized based on subscription with retroactive rollouts and premium subscriptions and a democratic-based user-driven platform.</li>
+            </ul>
+            <h3>Other Responsibilities</h3>
+            <ul>
+              <li>Network administration, cloud computing, virtualization, DBS management, web development, server monitoring, cyber security, data backup, server optimization, general systems administration and acquiring deep familiarity with Linux</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <hr class="section-divider">
+      <div class="coursework">
+        <h2>Coursework and Classes</h2>
+        <ul>
+        <h3>University of Washington, Computer Science Major, Est. Graduation Date Sp. 2024</h3>
+          <li><strong>All the Courses I have Completed - September 2020 - October 2023</strong>
+            <h3>The Main Courses</h3>
+            <ul>
+                <ul>
+                  <li><strong>Cyber Security</strong> [Memory Vulnerabilities, Website Security]</li>
+                  <li><strong>Software Engineering</strong> [Group-work Oriented, Advanced Software Design]</li>
+                  <li><strong>Compilers</strong> [From The Ground Up - MiniJava]</li>
+                  <li><strong>The Hardware/Software Interface</strong> [Assembly and Computer Design]</li>
+                  <li><strong>Introduction to Data Management</strong> [Azure-based Database Management]</li>
+                  <li><strong>Programming Languages</strong> [Unique / Different Programming Languages - OCaml, LISP]</li>
+                  <li><strong>Systems Programming</strong> [C, C++, explicit memory management]</li>
+                  <li><strong>Data Structures & Parallelism</strong> [Concurrency, Complex Algorithms]</li>
+                  <li><strong>Software Design & Implementation</strong> [Fundamentals of High Quality Software Design]</li>
+                  <li><strong>Foundations of Computing 2 / Advanced Discrete Math II</strong></li>
+                  <li><strong>Foundations of Computing / Discrete Math I</strong></li>
+                  <li><strong>System and Software Tools</strong> [Basic Command-line Introduction]</li>
+                  <li><strong>Special Topics in CS</strong> [Building a Computer Virtually From Ground Up, Metacognition]</li>
+                  <li><strong>Web Programming</strong> [HTML, CSS, JavaScript (React Native), Game Design on Websites]</li>
+                  <li><strong>Linear/Matrix Algebra</strong></li>
+                  <li><strong>Calculus with Analytic Geometry III</strong></li>
+                </ul>
+            </ul>
+          </li>
+        </ul>
+        <div class="relevant-associations">
+            <h2>Relevant Associations</h2>
+            <h3>UW Blockchain Society - 2019 - 2020</h3>
+            <p><a href="https://www.uwblockchain.org/">https://www.uwblockchain.org/</a></p>
+            <ul>
+              <li>Handled delegations from reports by the manager of operations</li>
+              <li>Attended meetings regularly for coordination outreach</li>
+              <li>Responsible for recruitment and poster design</li>
+              <li>Engaged with several breakdowns of blockchain</li>
+              <li>Explored potential possibilities for the current technology</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+  </div>
+
+<footer>
+    <p>&copy; 2023 My Professional Website</p>
+    <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+</footer>
+
+<script>
+    fetch('../navbar.html')
+        .then(response => response.text())
+        .then(data => document.getElementById('navbar').innerHTML = data);
+</script>
+</body>
+</html>```
+
+
+`./pages/testimonials.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonials | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">Testimonials</h1>
+            <div class="intro-content">
+                <!-- Add your testimonials content here -->
+            </div>
+        </section>
+    </main>    
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script>
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>```
+
+
+`./pages/about.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">About Me</h1>
+            <div class="intro-content">
+                <p>With a total of 7 years of experience, 4 of which are professional, as well as about to be graduating from the University of Washington, I am a full-stack engineer who specializes in Python and Java. Recently, I have become very adept at working with and building sensible applications using multimodal AI.</p>
+                <p>My journey in the world of computing began at a young age, and my passion for it has only grown since then. I have a keen interest in the future of computing, particularly the development of artificial intelligence. I am dedicated to contributing to this field in an open-source manner, with the aim of guiding society towards a future where technology and humanity coexist harmoniously.</p>
+                <p>Over the years, I have worked on many, many projects, only some of which are listed below, and do not include academic endeavors</p>
+                <a href="../pages/portfolio.html" class="cta">For More Info, Check out My Full Portfolio!</a>
+                <ul>
+                    <li><a href="https://github.com/alexfacehead/AutoGPTCommands">AutoGPTCommands</a>: This innovative project integrates commands with AutoGPT. It includes features such as read, write, and delete access. It has gathered notable attention and is widely appreciated in the community.</li>
+                    <li><a href="https://github.com/alexfacehead/SimpleChess">SimpleChess</a>: A clean and simple implementation of Chess with networking, written in Python.</li>
+                    <li><a href="https://github.com/alexfacehead/cellular-automata">Cellular Automata</a>: A simple framework for custom and standard cellular automata in C++.</li>
+                    <li><a href="https://github.com/alexfacehead/SudokuML">SudokuML</a>: A Q-learning based RL agent designed to solve Sudoku puzzles.</li>
+                    <li>WebsiteMaker: A tool that automatically expands and improves simple websites using LLMs and regexes. (Status: Nearly Completed)</li>
+                    <li>Custodian: A digital custodian project written in C++. (Status: In Progress)</li>
+                    <li><a href="https://github.com/alexfacehead/PacmanML">PacmanML</a>: Pacman reinforcement learning with adversarial neural networks for ghosts and pacman. Required building a framework for PacMan from the ground up, so may take some time! (Status: In Progress)</li>
+                    <li><a href="https://github.com/alexfacehead/directed-graph-3D">Directed Graph 3D</a>: A project for rendering 3D directed graphs. Intended to simulate and iterate on Stephen Wolfram's hypergraph theories. (Status: In Progress)</li>
+                    <li>NeuralMusic: A private project updated last in February 2020. (Status: In Progress)</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+    
+    <script>
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>```
+
+
+`./pages/contact.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">Contact Me</h1>
+            <div class="intro-content">
+                <p>You can reach me at:</p>
+                <ul>
+                    <li><span class="contact-type">School Email:</span> <a href="mailto:ahugli@uw.edu">ahugli@uw.edu</a></li>
+                    <li><span class="contact-type">Personal Email:</span> <a href="mailto:alexfacehead@hotmail.com">alexfacehead@hotmail.com</a></li>
+                    <li><span class="contact-type">GitHub:</span> <a href="https://github.com/alexfacehead/">alexfacehead</a></li>
+                    <li><span class="contact-type">LinkedIn:</span> <a href="https://www.linkedin.com/in/alex-hugli/">Alex Hugli</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+     
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script>
+        // NavBar 
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>```
+
+
+`./pages/services.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">My Services</h1>
+            <div class="intro-content">
+                <ul class="services-list">
+                    <li>Full-Stack Development</li>
+                    <li>Python Programming</li>
+                    <li>Java Programming</li>
+                    <li>Web Development</li>
+                    <li>AI and Machine Learning Solutions</li>
+                    <li>Open Source Contributions</li>
+                    <li>Simple Games</li>
+                </ul>
+            </div>
+        </section>
+    </main>  
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script>
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>```
+
+
+`./pages/portfolio.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">My Portfolio</h1>
+            <div class="intro-content">
+                <p>Here are my personal projects. For access to <b>coursework</b>, please contact me directly at 
+                    <a href="mailto:ahugli@uw.edu">ahugli@uw.edu</a> OR using the <a href="/pages/contact.html">contact form.</a></p>
+                <p class="access-text"><b>I will then grant you access as a collaborator!</b></p>
+            </div>
+        </section>        
+             
+        <section>
+            <h2>List of Completed Personal Projects, Including Unlisted / Private Work on GitHub!<br><span style="font-size:0.6em;">(in case you didn't want to check yourself!)</span></h2>
+            <ul>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/AutoGPTCommands">AutoGPTCommands</a></span>
+                    <span class="project-status completed">[COMPLETED]</span>
+                    <p class="project-description">This innovative project integrates commands with AutoGPT. It includes features such as read, write, and delete access. It has gathered notable attention and is widely appreciated in the community.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/EasyGPT-3.5">EasyGPT-3.5</a></span>
+                    <span class="project-status completed">[COMPLETED]</span>
+                    <p class="project-description">This project, largely built based on recent research papers, provides a command-line interface for using whatever OpenAI model you want, while only writing one single sentence, with Unit Tests' results estimating 50-100% increase in quality (using GPT-4 as the rater) on smaller LLMs, thereby reducing costs by a factor of 100, with higher quality output.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name">Red-Teaming OpenAI's GPT-4-0314 Model</span>
+                    <span class="project-status completed">[ALMOST PERFECT]</span>
+                    <p class="project-description">The general premise of this project was to prove that language models can be exploited for various purposes, such as collecting information on people with very little starting information. Results were submitted to OpenAI. I have, currently, an open submission to them about becoming a part-time official red-teamer.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/SimpleChess">SimpleChess</a></span>
+                    <span class="project-status completed">[COMPLETED]</span>
+                    <p class="project-description">A clean and simple implementation of Chess with networking, written in Python.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/cellular-automata">Cellular Automata</a></span>
+                    <span class="project-status completed">[COMPLETED]</span>
+                    <p class="project-description">A simple framework for custom and standard cellular automata in C++.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/SudokuML">SudokuML</a></span>
+                    <span class="project-status completed">[COMPLETED]</span>
+                    <p class="project-description">A Q-learning based RL agent designed to solve Sudoku puzzles.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name">WebsiteMaker</span>
+                    <span class="project-status draft-completed">[BASICALLY COMPLETED]</span>
+                    <p class="project-description">A tool that automatically expands and improves simple websites using LLMs and regexes.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name">Custodian</span>
+                    <span class="project-status incomplete">[INCOMPLETE]</span>
+                    <p class="project-description">A digital custodian project written in C++. Designed for system administration from scratch. For the purposes of security, I cannot share without you requesting access.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/PacmanML">PacmanML</a></span>
+                    <span class="project-status incomplete">[INCOMPLETE]</span>
+                    <p class="project-description">Pacman reinforcement learning with adversarial neural networks for ghosts and pacman.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name"><a href="https://github.com/alexfacehead/directed-graph-3D">Directed Graph 3D</a></span>
+                    <span class="project-status incomplete">[INCOMPLETE]</span>
+                    <p class="project-description">A project for rendering 3D directed graphs.</p>
+                </li>
+                <li class="project-item">
+                    <span class="project-name">NeuralMusic</span>
+                    <span class="project-status incomplete">[INCOMPLETE]</span>
+                    <p class="project-description">A private project for music generation with a detailed plan, contact for specifics!</p>
+                </li>
+            </ul>
+        </section>
+    </main>    
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script>
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>```
+
+

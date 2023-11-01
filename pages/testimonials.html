@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonials | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">Testimonials</h1>
+            <div class="intro-content">
+                <!-- Add your testimonials content here -->
+            </div>
+        </section>
+    </main>    
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script>
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>

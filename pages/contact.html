@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | My Professional Website</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <main>
+        <section class="intro">
+            <h1 class="intro-title">Contact Me</h1>
+            <div class="intro-content">
+                <p>You can reach me at:</p>
+                <ul>
+                    <li><span class="contact-type">School Email:</span> <a href="mailto:ahugli@uw.edu">ahugli@uw.edu</a></li>
+                    <li><span class="contact-type">Personal Email:</span> <a href="mailto:alexfacehead@hotmail.com">alexfacehead@hotmail.com</a></li>
+                    <li><span class="contact-type">GitHub:</span> <a href="https://github.com/alexfacehead/">alexfacehead</a></li>
+                    <li><span class="contact-type">LinkedIn:</span> <a href="https://www.linkedin.com/in/alex-hugli/">Alex Hugli</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+     
+
+    <footer>
+        <p>&copy; 2023 My Professional Website</p>
+        <p><a href="mailto:info@mywebsite.com">ahugli@uw.edu</a></p>
+    </footer>
+
+    <script>
+        // NavBar 
+        fetch('../navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar').innerHTML = data);
+    </script>
+</body>
+</html>
