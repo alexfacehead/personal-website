@@ -420,9 +420,10 @@ p { color: var(--text-secondary); max-width: 65ch; }
   .nav-toggle { display: flex; }
   .nav-links {
     position: fixed; top: var(--nav-height); left: 0; right: 0; bottom: 0;
-    background: rgba(10, 10, 10, 0.98); flex-direction: column;
-    padding: 32px 24px; gap: 4px;
+    background: var(--bg-primary); flex-direction: column;
+    padding: 32px 24px; gap: 4px; z-index: 9999;
     transform: translateX(100%); transition: transform var(--transition-base);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
   }
   .nav-links.open { transform: translateX(0); }
   .nav-links a { font-size: 1.1rem; padding: 14px 16px; width: 100%; }
