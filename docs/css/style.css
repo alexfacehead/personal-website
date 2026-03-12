@@ -94,7 +94,7 @@ p { color: var(--text-secondary); max-width: 65ch; }
 
 /* Navigation */
 .nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
   height: var(--nav-height); display: flex; align-items: center;
   background: rgba(10, 10, 10, 0.8);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
