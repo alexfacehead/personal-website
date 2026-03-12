@@ -419,14 +419,13 @@ p { color: var(--text-secondary); max-width: 65ch; }
   .section { padding: 60px 0; }
   .nav-toggle { display: flex; }
   .nav-links {
+    display: none;
     position: fixed; top: var(--nav-height); left: 0; right: 0; bottom: 0;
     background: #0a0a0a; flex-direction: column;
-    padding: 32px 24px; gap: 4px; z-index: 9999;
-    transform: translateX(100%); transition: transform var(--transition-base);
-    -webkit-backdrop-filter: none; backdrop-filter: none;
+    padding: 32px 24px; gap: 4px;
     overflow-y: auto;
   }
-  .nav-links.open { transform: translateX(0); }
+  .nav-links.open { display: flex; }
   .nav-links a { font-size: 1.1rem; padding: 14px 16px; width: 100%; }
   .hero { overflow: visible; }
   .hero::before { display: none; }
