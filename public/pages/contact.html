@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Contact — Alex Hugli</title>
+    <meta name="description" content="Get in touch with Alex Hugli — open to freelance work, collaborations, and full-time opportunities in backend engineering and AI.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
+    <script>if(typeof emailjs!=='undefined'){emailjs.init({publicKey:'_tEw1b7JreVGELO-d'});}</script>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Get in Touch</h1>
+            <p>Have a project idea or want to collaborate? I'd love to hear from you.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="contact-layout">
+                <div class="contact-info">
+                    <h2>Let's Connect</h2>
+                    <p>I'm currently open to freelance work, collaborations, and full-time opportunities.</p>
+                    <div class="contact-links">
+                        <a href="mailto:alexanderhugli@gmail.com" class="contact-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <div>
+                                <span class="contact-link-label">Email</span>
+                                <span class="contact-link-value">alexanderhugli@gmail.com</span>
+                            </div>
+                        </a>
+                        <a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer" class="contact-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>
+                            </svg>
+                            <div>
+                                <span class="contact-link-label">GitHub</span>
+                                <span class="contact-link-value">alexfacehead</span>
+                            </div>
+                        </a>
+                        <a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer" class="contact-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                            <div>
+                                <span class="contact-link-label">LinkedIn</span>
+                                <span class="contact-link-value">Alex Hugli</span>
+                            </div>
+                        </a>
+                        <div class="contact-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <div>
+                                <span class="contact-link-label">Location</span>
+                                <span class="contact-link-value">Seattle, WA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <form id="contactForm" autocomplete="off">
+                        <h3>Send a Message</h3>
+                        <div class="form-group">
+                            <label for="from_name">Name</label>
+                            <input type="text" id="from_name" name="from_name" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reply_to">Email</label>
+                            <input type="email" id="reply_to" name="reply_to" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" placeholder="What's this about?">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Tell me about your project..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Send Message
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
+                        <div id="formStatus" class="form-status"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="contact.html">Contact</a></div></div></footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

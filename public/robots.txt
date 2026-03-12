@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://alexhugli.com/sitemap.xml

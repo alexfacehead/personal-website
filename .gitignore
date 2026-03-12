@@ -22,7 +22,12 @@ venv
 .DS_Store  # macOS
 Thumbs.db  # Windows
 
+# Claude Code
+.claude/
+
 # Ignore unnecessary files for website functionality
 tree_structure.sh
 generate_resume_pdf.py
+generate_resume.py
+output.txt
 

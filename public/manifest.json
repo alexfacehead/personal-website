@@ -1,0 +1,16 @@
+{
+  "name": "Alex Hugli — Developer Portfolio",
+  "short_name": "Alex Hugli",
+  "description": "Full-stack engineer and AI/ML developer portfolio.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/img/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    }
+  ]
+}
