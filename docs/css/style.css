@@ -418,15 +418,7 @@ p { color: var(--text-secondary); max-width: 65ch; }
   :root { --nav-height: 64px; }
   .section { padding: 60px 0; }
   .nav-toggle { display: flex; }
-  .nav-links {
-    display: none;
-    position: fixed; top: var(--nav-height); left: 0; right: 0; bottom: 0;
-    background: #0a0a0a; flex-direction: column;
-    padding: 32px 24px; gap: 4px;
-    overflow-y: auto;
-  }
-  .nav-links.open { display: flex; }
-  .nav-links a { font-size: 1.1rem; padding: 14px 16px; width: 100%; }
+  .nav-links { display: none; }
   .hero { overflow: visible; }
   .hero::before { display: none; }
   .hero-cta { flex-direction: column; }
