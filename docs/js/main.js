@@ -23,6 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Make project cards fully clickable
+  document.querySelectorAll('.project-card').forEach(card => {
+    const link = card.querySelector('.project-card-links a');
+    if (link) {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        window.open(link.href, '_blank', 'noopener,noreferrer');
+      });
+    }
+  });
 });
 
 function initNav() {
