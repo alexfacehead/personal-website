@@ -6,7 +6,7 @@ import sys
 import logging
 
 # Serve only the public/ directory — nothing else is accessible
-app = Flask(__name__, static_url_path='', static_folder='public')
+app = Flask(__name__, static_url_path='', static_folder='docs')
 
 
 # --- Security headers on every response -----------------------------------
@@ -47,7 +47,7 @@ def render_page(page_name):
     # Whitelist: only allow .html files, no path traversal
     if not re.match(r'^[a-zA-Z0-9_-]+\.html$', page_name):
         abort(404)
-    return send_from_directory('public/pages', page_name)
+    return send_from_directory('docs/pages', page_name)
 
 
 # --- Error handlers -------------------------------------------------------
