@@ -428,6 +428,8 @@ p { color: var(--text-secondary); max-width: 65ch; }
   }
   .nav-links.open { transform: translateX(0); }
   .nav-links a { font-size: 1.1rem; padding: 14px 16px; width: 100%; }
+  .hero { overflow: visible; }
+  .hero::before { display: none; }
   .hero-cta { flex-direction: column; }
   .hero-cta .btn { text-align: center; justify-content: center; }
   .stats-bar { flex-wrap: wrap; gap: 24px; }
