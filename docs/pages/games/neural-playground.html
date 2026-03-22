@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Neural Network Playground — Alex Hugli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=5">
+    <style>
+        .nn-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            align-items: start;
+        }
+        .nn-config {
+            display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+            align-items: end;
+        }
+        .nn-config-group {
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .nn-config-group label {
+            font-family: var(--font-mono); font-size: 0.75rem;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .nn-config-group select, .nn-config-group input[type="range"] {
+            background: var(--bg-tertiary); border: 1px solid var(--border);
+            color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8rem;
+            padding: 6px 10px; border-radius: var(--radius-sm); outline: none;
+        }
+        .nn-config-group select:focus { border-color: var(--accent); }
+        .nn-config-group input[type="range"] {
+            -webkit-appearance: none; width: 120px; height: 4px;
+            padding: 0; border: none; background: var(--border); border-radius: 2px; cursor: pointer;
+        }
+        .nn-config-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px;
+            background: var(--accent); border-radius: 50%; cursor: pointer;
+        }
+        .nn-config-group .range-val {
+            font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary);
+            min-width: 30px; text-align: center;
+        }
+        .nn-config-group .range-row {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .nn-heatmap-wrap {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: var(--radius-md); overflow: hidden; position: relative;
+            aspect-ratio: 1;
+        }
+        .nn-heatmap-wrap canvas {
+            display: block; width: 100%; height: 100%;
+        }
+        .nn-sidebar {
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        .nn-panel {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 16px;
+        }
+        .nn-panel h4 {
+            font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;
+        }
+        .nn-panel canvas, .nn-panel svg {
+            width: 100%; display: block;
+        }
+        .nn-panel svg { height: auto; }
+        .dataset-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .dataset-btns button {
+            font-family: var(--font-mono); font-size: 0.78rem; padding: 5px 12px;
+            background: transparent; color: var(--text-secondary); border: 1px solid var(--border);
+            border-radius: 16px; cursor: pointer; transition: all 0.15s;
+        }
+        .dataset-btns button:hover { border-color: var(--border-hover); color: var(--text-primary); }
+        .dataset-btns button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        @media (max-width: 900px) {
+            .nn-layout { grid-template-columns: 1fr; }
+            .nn-heatmap-wrap { max-width: 500px; margin: 0 auto; }
+        }
+        @media (max-width: 480px) {
+            .nn-config-group input[type="range"] { width: 90px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <a href="../demos.html" class="game-back-link">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Demos
+            </a>
+            <h1>Neural Network Playground</h1>
+            <p>Configure a neural network and watch it learn to classify 2D data in real-time. Adjust layers, neurons, and activation functions to see how architecture affects learning.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="nn-config">
+                <div class="nn-config-group">
+                    <label>Dataset</label>
+                    <div class="dataset-btns" id="datasetBtns">
+                        <button class="active" onclick="setDataset('circle')">Circle</button>
+                        <button onclick="setDataset('xor')">XOR</button>
+                        <button onclick="setDataset('spiral')">Spiral</button>
+                        <button onclick="setDataset('clusters')">Clusters</button>
+                    </div>
+                </div>
+                <div class="nn-config-group">
+                    <label>Activation</label>
+                    <select id="activation" onchange="rebuildNetwork()">
+                        <option value="relu">ReLU</option>
+                        <option value="tanh" selected>Tanh</option>
+                        <option value="sigmoid">Sigmoid</option>
+                    </select>
+                </div>
+                <div class="nn-config-group">
+                    <label>Hidden Layers</label>
+                    <div class="range-row">
+                        <input type="range" id="numLayers" min="1" max="4" value="2" oninput="updateLayerVal(); rebuildNetwork()">
+                        <span class="range-val" id="numLayersVal">2</span>
+                    </div>
+                </div>
+                <div class="nn-config-group">
+                    <label>Neurons / Layer</label>
+                    <div class="range-row">
+                        <input type="range" id="numNeurons" min="1" max="8" value="4" oninput="updateNeuronVal(); rebuildNetwork()">
+                        <span class="range-val" id="numNeuronsVal">4</span>
+                    </div>
+                </div>
+                <div class="nn-config-group">
+                    <label>Learning Rate</label>
+                    <div class="range-row">
+                        <input type="range" id="lr" min="1" max="100" value="30" oninput="updateLRVal()">
+                        <span class="range-val" id="lrVal">0.030</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nn-layout">
+                <div>
+                    <div class="nn-heatmap-wrap">
+                        <canvas id="heatmap" width="400" height="400"></canvas>
+                    </div>
+                    <div class="game-stats" style="margin-top: 16px;">
+                        <span>Epoch: <strong id="epoch">0</strong></span>
+                        <span>Loss: <strong id="loss">—</strong></span>
+                        <span>Accuracy: <strong id="accuracy">—</strong></span>
+                    </div>
+                    <div class="game-controls" style="margin-top: 12px;">
+                        <button class="btn btn-primary" id="trainBtn" onclick="toggleTrain()">Train</button>
+                        <button class="btn btn-secondary" onclick="stepOnce()">Step</button>
+                        <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+                    </div>
+                </div>
+                <div class="nn-sidebar">
+                    <div class="nn-panel">
+                        <h4>Network Architecture</h4>
+                        <svg id="netSvg" viewBox="0 0 280 200"></svg>
+                    </div>
+                    <div class="nn-panel">
+                        <h4>Loss Curve</h4>
+                        <canvas id="lossChart" width="280" height="120"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="../contact.html">Contact</a></div></div></footer>
+
+    <script src="../../js/main.js?v=5"></script>
+    <script>
+    // ═══════════════════════════════════════════
+    // NEURAL NETWORK — Pure JS implementation
+    // ═══════════════════════════════════════════
+
+    // --- Activation functions ---
+    const activations = {
+        relu:    { fn: x => Math.max(0, x),         dfn: x => x > 0 ? 1 : 0 },
+        tanh:    { fn: x => Math.tanh(x),            dfn: x => 1 - Math.tanh(x) ** 2 },
+        sigmoid: { fn: x => 1 / (1 + Math.exp(-x)),  dfn: x => { const s = 1 / (1 + Math.exp(-x)); return s * (1 - s); } }
+    };
+
+    // --- Network class ---
+    class NeuralNetwork {
+        constructor(layerSizes, activationName) {
+            this.sizes = layerSizes;
+            this.act = activations[activationName];
+            this.weights = [];
+            this.biases = [];
+            for (let i = 0; i < layerSizes.length - 1; i++) {
+                const rows = layerSizes[i + 1], cols = layerSizes[i];
+                // Xavier initialization
+                const scale = Math.sqrt(2 / (cols + rows));
+                this.weights.push(Array.from({ length: rows }, () =>
+                    Array.from({ length: cols }, () => (Math.random() * 2 - 1) * scale)
+                ));
+                this.biases.push(Array(rows).fill(0));
+            }
+        }
+
+        forward(input) {
+            this.layerOutputs = [input];
+            this.preActivations = [];
+            let current = input;
+            for (let l = 0; l < this.weights.length; l++) {
+                const w = this.weights[l], b = this.biases[l];
+                const z = w.map((row, i) =>
+                    row.reduce((sum, wij, j) => sum + wij * current[j], 0) + b[i]
+                );
+                this.preActivations.push(z);
+                // Last layer uses sigmoid for binary classification
+                const isLast = l === this.weights.length - 1;
+                current = z.map(v => isLast ? activations.sigmoid.fn(v) : this.act.fn(v));
+                this.layerOutputs.push(current);
+            }
+            return current;
+        }
+
+        backward(target, lr) {
+            const L = this.weights.length;
+            const deltas = new Array(L);
+
+            // Output layer delta (binary cross-entropy + sigmoid)
+            const output = this.layerOutputs[L];
+            deltas[L - 1] = output.map((o, i) => o - target[i]);
+
+            // Hidden layer deltas
+            for (let l = L - 2; l >= 0; l--) {
+                deltas[l] = this.weights[l + 1][0].map((_, j) => {
+                    let sum = 0;
+                    for (let k = 0; k < this.weights[l + 1].length; k++) {
+                        sum += this.weights[l + 1][k][j] * deltas[l + 1][k];
+                    }
+                    return sum * this.act.dfn(this.preActivations[l][j]);
+                });
+            }
+
+            // Update weights and biases
+            for (let l = 0; l < L; l++) {
+                const input = this.layerOutputs[l];
+                for (let i = 0; i < this.weights[l].length; i++) {
+                    for (let j = 0; j < this.weights[l][i].length; j++) {
+                        this.weights[l][i][j] -= lr * deltas[l][i] * input[j];
+                    }
+                    this.biases[l][i] -= lr * deltas[l][i];
+                }
+            }
+        }
+
+        predict(input) {
+            return this.forward(input)[0];
+        }
+    }
+
+    // ═══════════════════════════════════════════
+    // DATASETS
+    // ═══════════════════════════════════════════
+
+    function generateDataset(name, n = 200) {
+        const data = [];
+        switch (name) {
+            case 'circle':
+                for (let i = 0; i < n; i++) {
+                    const r = Math.random() * 2;
+                    const angle = Math.random() * Math.PI * 2;
+                    const x = r * Math.cos(angle);
+                    const y = r * Math.sin(angle);
+                    data.push({ x, y, label: r < 1.0 ? 1 : 0 });
+                }
+                break;
+            case 'xor':
+                for (let i = 0; i < n; i++) {
+                    const x = Math.random() * 4 - 2;
+                    const y = Math.random() * 4 - 2;
+                    const label = (x > 0) === (y > 0) ? 1 : 0;
+                    data.push({ x: x + (Math.random() - 0.5) * 0.3, y: y + (Math.random() - 0.5) * 0.3, label });
+                }
+                break;
+            case 'spiral':
+                for (let i = 0; i < n / 2; i++) {
+                    const r = i / (n / 2) * 2;
+                    const t = i / (n / 2) * Math.PI * 3 + Math.random() * 0.3;
+                    data.push({ x: r * Math.cos(t), y: r * Math.sin(t), label: 1 });
+                    data.push({ x: r * Math.cos(t + Math.PI), y: r * Math.sin(t + Math.PI), label: 0 });
+                }
+                break;
+            case 'clusters':
+                for (let i = 0; i < n / 2; i++) {
+                    data.push({ x: -1 + Math.random() * 0.8 - 0.4, y: -1 + Math.random() * 0.8 - 0.4, label: 0 });
+                    data.push({ x: 1 + Math.random() * 0.8 - 0.4, y: 1 + Math.random() * 0.8 - 0.4, label: 1 });
+                }
+                break;
+        }
+        return data;
+    }
+
+    // ═══════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════
+
+    let net, dataset, datasetName = 'circle', epochCount = 0, training = false, animId;
+    let lossHistory = [];
+
+    function getConfig() {
+        return {
+            layers: parseInt(document.getElementById('numLayers').value),
+            neurons: parseInt(document.getElementById('numNeurons').value),
+            activation: document.getElementById('activation').value,
+            lr: parseInt(document.getElementById('lr').value) / 1000
+        };
+    }
+
+    function buildNetwork() {
+        const cfg = getConfig();
+        const sizes = [2];
+        for (let i = 0; i < cfg.layers; i++) sizes.push(cfg.neurons);
+        sizes.push(1);
+        net = new NeuralNetwork(sizes, cfg.activation);
+        epochCount = 0;
+        lossHistory = [];
+        updateStats();
+    }
+
+    function rebuildNetwork() {
+        const wasTraining = training;
+        if (training) toggleTrain();
+        buildNetwork();
+        drawAll();
+        if (wasTraining) toggleTrain();
+    }
+
+    function setDataset(name) {
+        datasetName = name;
+        document.querySelectorAll('#datasetBtns button').forEach(b =>
+            b.classList.toggle('active', b.textContent.toLowerCase() === name)
+        );
+        dataset = generateDataset(name);
+        rebuildNetwork();
+    }
+
+    function resetAll() {
+        if (training) toggleTrain();
+        dataset = generateDataset(datasetName);
+        buildNetwork();
+        drawAll();
+    }
+
+    // ═══════════════════════════════════════════
+    // TRAINING
+    // ═══════════════════════════════════════════
+
+    function trainStep() {
+        const cfg = getConfig();
+        let totalLoss = 0;
+        // Shuffle
+        const indices = dataset.map((_, i) => i);
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        for (const idx of indices) {
+            const d = dataset[idx];
+            const input = [d.x / 2, d.y / 2]; // normalize to ~[-1, 1]
+            const output = net.forward(input);
+            const target = [d.label];
+            // Binary cross-entropy loss
+            const p = Math.max(1e-7, Math.min(1 - 1e-7, output[0]));
+            totalLoss += -(d.label * Math.log(p) + (1 - d.label) * Math.log(1 - p));
+            net.backward(target, cfg.lr);
+        }
+        epochCount++;
+        const avgLoss = totalLoss / dataset.length;
+        lossHistory.push(avgLoss);
+        if (lossHistory.length > 500) lossHistory.shift();
+        return avgLoss;
+    }
+
+    function toggleTrain() {
+        training = !training;
+        document.getElementById('trainBtn').textContent = training ? 'Pause' : 'Train';
+        if (training) trainLoop();
+    }
+
+    function trainLoop() {
+        if (!training) return;
+        // Run multiple steps per frame for speed
+        for (let i = 0; i < 5; i++) trainStep();
+        drawAll();
+        animId = requestAnimationFrame(trainLoop);
+    }
+
+    function stepOnce() {
+        trainStep();
+        drawAll();
+    }
+
+    // ═══════════════════════════════════════════
+    // RENDERING — Decision Boundary Heatmap
+    // ═══════════════════════════════════════════
+
+    const heatCanvas = document.getElementById('heatmap');
+    const heatCtx = heatCanvas.getContext('2d');
+    const RES = 50; // heatmap resolution
+
+    function drawHeatmap() {
+        const W = heatCanvas.width, H = heatCanvas.height;
+        const cellW = W / RES, cellH = H / RES;
+        const imgData = heatCtx.createImageData(W, H);
+
+        for (let gy = 0; gy < RES; gy++) {
+            for (let gx = 0; gx < RES; gx++) {
+                const x = (gx / RES) * 4 - 2; // map to [-2, 2]
+                const y = (gy / RES) * 4 - 2;
+                const p = net.predict([x / 2, y / 2]);
+
+                // Blue (class 0) to Orange (class 1)
+                const r = Math.round(p * 251 + (1 - p) * 59);
+                const g = Math.round(p * 146 + (1 - p) * 130);
+                const b = Math.round(p * 56 + (1 - p) * 246);
+
+                // Fill the cell pixels
+                const startX = Math.floor(gx * cellW);
+                const startY = Math.floor(gy * cellH);
+                const endX = Math.floor((gx + 1) * cellW);
+                const endY = Math.floor((gy + 1) * cellH);
+                for (let py = startY; py < endY; py++) {
+                    for (let px = startX; px < endX; px++) {
+                        const idx = (py * W + px) * 4;
+                        imgData.data[idx] = r;
+                        imgData.data[idx + 1] = g;
+                        imgData.data[idx + 2] = b;
+                        imgData.data[idx + 3] = 180;
+                    }
+                }
+            }
+        }
+        heatCtx.putImageData(imgData, 0, 0);
+
+        // Draw data points
+        const W2 = W, H2 = H;
+        dataset.forEach(d => {
+            const px = (d.x + 2) / 4 * W2;
+            const py = (d.y + 2) / 4 * H2;
+            heatCtx.beginPath();
+            heatCtx.arc(px, py, 3.5, 0, Math.PI * 2);
+            heatCtx.fillStyle = d.label === 1 ? '#fb9238' : '#3b82f6';
+            heatCtx.fill();
+            heatCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+            heatCtx.lineWidth = 1;
+            heatCtx.stroke();
+        });
+    }
+
+    // ═══════════════════════════════════════════
+    // RENDERING — Network Diagram (SVG)
+    // ═══════════════════════════════════════════
+
+    function drawNetworkDiagram() {
+        const svg = document.getElementById('netSvg');
+        const sizes = net.sizes;
+        const numLayers = sizes.length;
+        const W = 280, H = 200;
+        const layerSpacing = W / (numLayers + 1);
+        const maxNeurons = Math.max(...sizes);
+
+        let html = '';
+
+        // Draw connections first (behind neurons)
+        for (let l = 0; l < numLayers - 1; l++) {
+            const x1 = (l + 1) * layerSpacing;
+            const x2 = (l + 2) * layerSpacing;
+            for (let i = 0; i < sizes[l]; i++) {
+                const y1 = (i + 1) * H / (sizes[l] + 1);
+                for (let j = 0; j < sizes[l + 1]; j++) {
+                    const y2 = (j + 1) * H / (sizes[l + 1] + 1);
+                    const w = net.weights[l][j][i];
+                    const absW = Math.min(Math.abs(w), 3);
+                    const thickness = 0.5 + absW * 1.2;
+                    const color = w > 0 ? `rgba(59,130,246,${0.2 + absW * 0.25})` : `rgba(239,68,68,${0.2 + absW * 0.25})`;
+                    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${thickness}"/>`;
+                }
+            }
+        }
+
+        // Draw neurons
+        for (let l = 0; l < numLayers; l++) {
+            const x = (l + 1) * layerSpacing;
+            for (let i = 0; i < sizes[l]; i++) {
+                const y = (i + 1) * H / (sizes[l] + 1);
+                const isInput = l === 0;
+                const isOutput = l === numLayers - 1;
+                const fill = isInput ? '#1a1a1a' : isOutput ? '#1a1a1a' : '#1a1a1a';
+                const stroke = isInput ? '#3b82f6' : isOutput ? '#fb9238' : '#a0a0a0';
+                html += `<circle cx="${x}" cy="${y}" r="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+            }
+        }
+
+        // Layer labels
+        const labels = ['In', ...sizes.slice(1, -1).map(() => 'H'), 'Out'];
+        for (let l = 0; l < numLayers; l++) {
+            const x = (l + 1) * layerSpacing;
+            html += `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="#666" font-size="9" font-family="JetBrains Mono, monospace">${labels[l]}</text>`;
+        }
+
+        svg.innerHTML = html;
+    }
+
+    // ═══════════════════════════════════════════
+    // RENDERING — Loss Chart
+    // ═══════════════════════════════════════════
+
+    const lossCanvas = document.getElementById('lossChart');
+    const lossCtx = lossCanvas.getContext('2d');
+
+    function drawLossChart() {
+        const W = lossCanvas.width, H = lossCanvas.height;
+        lossCtx.fillStyle = '#111';
+        lossCtx.fillRect(0, 0, W, H);
+
+        if (lossHistory.length < 2) {
+            lossCtx.fillStyle = '#333';
+            lossCtx.font = '12px JetBrains Mono, monospace';
+            lossCtx.textAlign = 'center';
+            lossCtx.fillText('Train to see loss curve', W / 2, H / 2);
+            return;
+        }
+
+        const maxLoss = Math.max(...lossHistory, 0.01);
+        const pad = { top: 10, bottom: 20, left: 5, right: 5 };
+        const plotW = W - pad.left - pad.right;
+        const plotH = H - pad.top - pad.bottom;
+
+        // Grid lines
+        lossCtx.strokeStyle = 'rgba(255,255,255,0.05)';
+        lossCtx.lineWidth = 0.5;
+        for (let i = 0; i <= 4; i++) {
+            const y = pad.top + (i / 4) * plotH;
+            lossCtx.beginPath(); lossCtx.moveTo(pad.left, y); lossCtx.lineTo(W - pad.right, y); lossCtx.stroke();
+        }
+
+        // Loss line
+        lossCtx.strokeStyle = '#3b82f6';
+        lossCtx.lineWidth = 1.5;
+        lossCtx.beginPath();
+        lossHistory.forEach((loss, i) => {
+            const x = pad.left + (i / (lossHistory.length - 1)) * plotW;
+            const y = pad.top + (1 - loss / maxLoss) * plotH;
+            i === 0 ? lossCtx.moveTo(x, y) : lossCtx.lineTo(x, y);
+        });
+        lossCtx.stroke();
+
+        // Current loss label
+        const lastLoss = lossHistory[lossHistory.length - 1];
+        lossCtx.fillStyle = '#666';
+        lossCtx.font = '9px JetBrains Mono, monospace';
+        lossCtx.textAlign = 'right';
+        lossCtx.fillText(maxLoss.toFixed(2), W - pad.right, pad.top + 8);
+        lossCtx.fillText('0', W - pad.right, H - pad.bottom + 12);
+    }
+
+    // ═══════════════════════════════════════════
+    // STATS & UI
+    // ═══════════════════════════════════════════
+
+    function updateStats() {
+        document.getElementById('epoch').textContent = epochCount;
+        if (lossHistory.length > 0) {
+            document.getElementById('loss').textContent = lossHistory[lossHistory.length - 1].toFixed(4);
+            // Compute accuracy
+            let correct = 0;
+            dataset.forEach(d => {
+                const p = net.predict([d.x / 2, d.y / 2]);
+                if ((p > 0.5 ? 1 : 0) === d.label) correct++;
+            });
+            document.getElementById('accuracy').textContent = (correct / dataset.length * 100).toFixed(1) + '%';
+        } else {
+            document.getElementById('loss').textContent = '—';
+            document.getElementById('accuracy').textContent = '—';
+        }
+    }
+
+    function updateLayerVal() { document.getElementById('numLayersVal').textContent = document.getElementById('numLayers').value; }
+    function updateNeuronVal() { document.getElementById('numNeuronsVal').textContent = document.getElementById('numNeurons').value; }
+    function updateLRVal() {
+        const v = parseInt(document.getElementById('lr').value) / 1000;
+        document.getElementById('lrVal').textContent = v.toFixed(3);
+    }
+
+    function drawAll() {
+        drawHeatmap();
+        drawNetworkDiagram();
+        drawLossChart();
+        updateStats();
+    }
+
+    // ═══════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════
+
+    dataset = generateDataset('circle');
+    buildNetwork();
+    drawAll();
+    </script>
+</body>
+</html>
