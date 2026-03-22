@@ -20,7 +20,7 @@ def add_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
-        "script-src 'self' https://cdn.jsdelivr.net; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data:; "
@@ -48,6 +48,13 @@ def render_page(page_name):
     if not re.match(r'^[a-zA-Z0-9_-]+\.html$', page_name):
         abort(404)
     return send_from_directory('docs/pages', page_name)
+
+
+@app.route('/pages/games/<page_name>')
+def render_game(page_name):
+    if not re.match(r'^[a-zA-Z0-9_-]+\.html$', page_name):
+        abort(404)
+    return send_from_directory('docs/pages/games', page_name)
 
 
 # --- Error handlers -------------------------------------------------------
