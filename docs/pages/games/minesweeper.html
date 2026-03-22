@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Minesweeper — Alex Hugli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=4">
+    <style>
+        .mine-grid {
+            display: inline-grid; gap: 1px; background: var(--border);
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            overflow: hidden; user-select: none;
+        }
+        .mine-cell {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; transition: background 0.1s;
+            background: var(--bg-tertiary); border: none; padding: 0; color: var(--text-primary);
+        }
+        .mine-cell:hover:not(.revealed):not(.flagged) { background: rgba(255,255,255,0.08); }
+        .mine-cell.revealed { background: var(--bg-secondary); cursor: default; }
+        .mine-cell.revealed.mine { background: rgba(239, 68, 68, 0.15); }
+        .mine-cell.flagged { color: var(--amber); }
+        .mine-cell .n1 { color: #3b82f6; } .mine-cell .n2 { color: #22c55e; }
+        .mine-cell .n3 { color: #ef4444; } .mine-cell .n4 { color: #8b5cf6; }
+        .mine-cell .n5 { color: #f59e0b; } .mine-cell .n6 { color: #06b6d4; }
+        .mine-cell .n7 { color: #ec4899; } .mine-cell .n8 { color: #a0a0a0; }
+        .mine-grid-wrap { text-align: center; overflow-x: auto; padding: 4px; }
+        .diff-btns { display: flex; gap: 6px; }
+        .diff-btns button { font-family: var(--font-mono); }
+        .diff-btns button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        @media (max-width: 480px) {
+            .mine-cell { width: 28px; height: 28px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <a href="../demos.html" class="game-back-link">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Demos
+            </a>
+            <h1>Minesweeper</h1>
+            <p>Left-click to reveal cells. Right-click to flag mines. Reveal all safe cells to win.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="game-wrapper" style="max-width: 700px;">
+                <div class="game-controls">
+                    <div class="diff-btns">
+                        <button class="btn btn-secondary active" onclick="setDiff(0)">Easy</button>
+                        <button class="btn btn-secondary" onclick="setDiff(1)">Medium</button>
+                        <button class="btn btn-secondary" onclick="setDiff(2)">Hard</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="newGame()">New Game</button>
+                </div>
+                <div class="game-stats">
+                    <span>Mines: <strong id="mineCount">10</strong></span>
+                    <span>Flags: <strong id="flagCount">0</strong></span>
+                    <span>Time: <strong id="timer">0</strong>s</span>
+                </div>
+                <div class="mine-grid-wrap">
+                    <div class="mine-grid" id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="../contact.html">Contact</a></div></div></footer>
+
+    <script src="../../js/main.js?v=4"></script>
+    <script>
+    const difficulties = [
+        { rows: 9, cols: 9, mines: 10 },
+        { rows: 16, cols: 16, mines: 40 },
+        { rows: 16, cols: 16, mines: 60 }
+    ];
+    let diff = 0, board, revealed, flagged, gameOver, firstClick, timerInterval, seconds;
+
+    function setDiff(d) {
+        diff = d;
+        document.querySelectorAll('.diff-btns button').forEach((b, i) => b.classList.toggle('active', i === d));
+        newGame();
+    }
+
+    function newGame() {
+        const { rows, cols, mines } = difficulties[diff];
+        board = Array.from({ length: rows }, () => Array(cols).fill(0));
+        revealed = Array.from({ length: rows }, () => Array(cols).fill(false));
+        flagged = Array.from({ length: rows }, () => Array(cols).fill(false));
+        gameOver = false;
+        firstClick = true;
+        seconds = 0;
+        clearInterval(timerInterval);
+        document.getElementById('timer').textContent = '0';
+        document.getElementById('mineCount').textContent = mines;
+        document.getElementById('flagCount').textContent = '0';
+        renderGrid();
+    }
+
+    function placeMines(safeR, safeC) {
+        const { rows, cols, mines } = difficulties[diff];
+        let placed = 0;
+        while (placed < mines) {
+            const r = Math.floor(Math.random() * rows);
+            const c = Math.floor(Math.random() * cols);
+            if (board[r][c] !== -1 && Math.abs(r - safeR) + Math.abs(c - safeC) > 1) {
+                board[r][c] = -1;
+                placed++;
+            }
+        }
+        // Count neighbors
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (board[r][c] === -1) continue;
+                let count = 0;
+                for (let dr = -1; dr <= 1; dr++)
+                    for (let dc = -1; dc <= 1; dc++) {
+                        const nr = r + dr, nc = c + dc;
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && board[nr][nc] === -1) count++;
+                    }
+                board[r][c] = count;
+            }
+        }
+    }
+
+    function reveal(r, c) {
+        const { rows, cols } = difficulties[diff];
+        if (r < 0 || r >= rows || c < 0 || c >= cols || revealed[r][c] || flagged[r][c]) return;
+        revealed[r][c] = true;
+        if (board[r][c] === 0) {
+            for (let dr = -1; dr <= 1; dr++)
+                for (let dc = -1; dc <= 1; dc++) reveal(r + dr, c + dc);
+        }
+    }
+
+    function checkWin() {
+        const { rows, cols, mines } = difficulties[diff];
+        let revealedCount = 0;
+        for (let r = 0; r < rows; r++)
+            for (let c = 0; c < cols; c++)
+                if (revealed[r][c]) revealedCount++;
+        return revealedCount === rows * cols - mines;
+    }
+
+    function handleClick(r, c) {
+        if (gameOver || revealed[r][c] || flagged[r][c]) return;
+        if (firstClick) {
+            firstClick = false;
+            placeMines(r, c);
+            timerInterval = setInterval(() => {
+                seconds++;
+                document.getElementById('timer').textContent = seconds;
+            }, 1000);
+        }
+        if (board[r][c] === -1) {
+            gameOver = true;
+            clearInterval(timerInterval);
+            // Reveal all mines
+            const { rows, cols } = difficulties[diff];
+            for (let i = 0; i < rows; i++)
+                for (let j = 0; j < cols; j++)
+                    if (board[i][j] === -1) revealed[i][j] = true;
+            renderGrid();
+            setTimeout(() => alert('Game Over! You hit a mine.'), 50);
+            return;
+        }
+        reveal(r, c);
+        if (checkWin()) {
+            gameOver = true;
+            clearInterval(timerInterval);
+            renderGrid();
+            setTimeout(() => alert('You win! Time: ' + seconds + 's'), 50);
+            return;
+        }
+        renderGrid();
+    }
+
+    function handleRightClick(e, r, c) {
+        e.preventDefault();
+        if (gameOver || revealed[r][c]) return;
+        flagged[r][c] = !flagged[r][c];
+        let fc = 0;
+        flagged.forEach(row => row.forEach(f => { if (f) fc++; }));
+        document.getElementById('flagCount').textContent = fc;
+        renderGrid();
+    }
+
+    function renderGrid() {
+        const { rows, cols } = difficulties[diff];
+        const grid = document.getElementById('grid');
+        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        grid.innerHTML = '';
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = document.createElement('button');
+                cell.className = 'mine-cell';
+                if (revealed[r][c]) {
+                    cell.classList.add('revealed');
+                    if (board[r][c] === -1) {
+                        cell.classList.add('mine');
+                        cell.textContent = '💣';
+                    } else if (board[r][c] > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'n' + board[r][c];
+                        span.textContent = board[r][c];
+                        cell.appendChild(span);
+                    }
+                } else if (flagged[r][c]) {
+                    cell.classList.add('flagged');
+                    cell.textContent = '⚑';
+                }
+                cell.addEventListener('click', () => handleClick(r, c));
+                cell.addEventListener('contextmenu', e => handleRightClick(e, r, c));
+                grid.appendChild(cell);
+            }
+        }
+    }
+
+    // Touch support: long press to flag
+    let longPressTimer;
+    document.getElementById('grid').addEventListener('touchstart', e => {
+        const cell = e.target.closest('.mine-cell');
+        if (!cell) return;
+        longPressTimer = setTimeout(() => {
+            const idx = Array.from(cell.parentNode.children).indexOf(cell);
+            const cols = difficulties[diff].cols;
+            const r = Math.floor(idx / cols), c = idx % cols;
+            handleRightClick(e, r, c);
+        }, 500);
+    }, { passive: true });
+    document.getElementById('grid').addEventListener('touchend', () => clearTimeout(longPressTimer));
+
+    newGame();
+    </script>
+</body>
+</html>

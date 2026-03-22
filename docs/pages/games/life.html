@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Game of Life — Alex Hugli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=4">
+    <style>
+        .life-canvas { image-rendering: pixelated; cursor: crosshair; }
+        .preset-btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+        .preset-btns button { font-size: 0.8rem; padding: 6px 14px; }
+        .speed-control { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); }
+        .speed-control input[type="range"] {
+            -webkit-appearance: none; width: 100px; height: 4px;
+            background: var(--border); border-radius: 2px; outline: none;
+        }
+        .speed-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px;
+            background: var(--accent); border-radius: 50%; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <a href="../demos.html" class="game-back-link">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Demos
+            </a>
+            <h1>Conway's Game of Life</h1>
+            <p>Click cells to toggle them alive/dead. Use controls to simulate. Try the preset patterns.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="game-wrapper" style="max-width: 700px;">
+                <div class="game-stats">
+                    <span>Generation: <strong id="gen">0</strong></span>
+                    <span>Population: <strong id="pop">0</strong></span>
+                    <span id="statusText">Paused</span>
+                </div>
+                <div class="game-canvas-wrap">
+                    <canvas id="game" class="life-canvas" width="600" height="600"></canvas>
+                </div>
+                <div class="game-controls" style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="playBtn" onclick="togglePlay()">Play</button>
+                    <button class="btn btn-secondary" onclick="step()">Step</button>
+                    <button class="btn btn-secondary" onclick="randomize()">Random</button>
+                    <button class="btn btn-secondary" onclick="clearGrid()">Clear</button>
+                    <div class="speed-control">
+                        <span>Speed</span>
+                        <input type="range" id="speed" min="1" max="30" value="10" oninput="updateSpeed()">
+                    </div>
+                </div>
+                <div class="preset-btns">
+                    <button class="btn btn-secondary" onclick="loadPreset('glider')">Glider</button>
+                    <button class="btn btn-secondary" onclick="loadPreset('lwss')">LWSS</button>
+                    <button class="btn btn-secondary" onclick="loadPreset('pulsar')">Pulsar</button>
+                    <button class="btn btn-secondary" onclick="loadPreset('gosper')">Gosper Gun</button>
+                    <button class="btn btn-secondary" onclick="loadPreset('rpentomino')">R-pentomino</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="../contact.html">Contact</a></div></div></footer>
+
+    <script src="../../js/main.js?v=4"></script>
+    <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const GRID = 60;
+    const CELL = canvas.width / GRID;
+
+    let grid = Array.from({ length: GRID }, () => Array(GRID).fill(0));
+    let generation = 0, playing = false, interval = null, fps = 10;
+
+    function draw() {
+        ctx.fillStyle = '#111111';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i <= GRID; i++) {
+            ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(canvas.width, i * CELL); ctx.stroke();
+        }
+        // Cells
+        let pop = 0;
+        for (let r = 0; r < GRID; r++) {
+            for (let c = 0; c < GRID; c++) {
+                if (grid[r][c]) {
+                    pop++;
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.globalAlpha = 0.9;
+                    ctx.fillRect(c * CELL + 0.5, r * CELL + 0.5, CELL - 1, CELL - 1);
+                }
+            }
+        }
+        ctx.globalAlpha = 1;
+        document.getElementById('pop').textContent = pop;
+        document.getElementById('gen').textContent = generation;
+    }
+
+    function step() {
+        const next = Array.from({ length: GRID }, () => Array(GRID).fill(0));
+        for (let r = 0; r < GRID; r++) {
+            for (let c = 0; c < GRID; c++) {
+                let neighbors = 0;
+                for (let dr = -1; dr <= 1; dr++)
+                    for (let dc = -1; dc <= 1; dc++) {
+                        if (dr === 0 && dc === 0) continue;
+                        const nr = (r + dr + GRID) % GRID;
+                        const nc = (c + dc + GRID) % GRID;
+                        neighbors += grid[nr][nc];
+                    }
+                if (grid[r][c]) {
+                    next[r][c] = (neighbors === 2 || neighbors === 3) ? 1 : 0;
+                } else {
+                    next[r][c] = neighbors === 3 ? 1 : 0;
+                }
+            }
+        }
+        grid = next;
+        generation++;
+        draw();
+    }
+
+    function togglePlay() {
+        playing = !playing;
+        document.getElementById('playBtn').textContent = playing ? 'Pause' : 'Play';
+        document.getElementById('statusText').textContent = playing ? 'Running' : 'Paused';
+        if (playing) {
+            interval = setInterval(step, 1000 / fps);
+        } else {
+            clearInterval(interval);
+        }
+    }
+
+    function updateSpeed() {
+        fps = parseInt(document.getElementById('speed').value);
+        if (playing) {
+            clearInterval(interval);
+            interval = setInterval(step, 1000 / fps);
+        }
+    }
+
+    function randomize() {
+        for (let r = 0; r < GRID; r++)
+            for (let c = 0; c < GRID; c++)
+                grid[r][c] = Math.random() < 0.25 ? 1 : 0;
+        generation = 0;
+        draw();
+    }
+
+    function clearGrid() {
+        grid = Array.from({ length: GRID }, () => Array(GRID).fill(0));
+        generation = 0;
+        draw();
+    }
+
+    // Click to toggle cells
+    let painting = false, paintVal = 1;
+    function getCellFromEvent(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        return { r: Math.floor(y / CELL), c: Math.floor(x / CELL) };
+    }
+
+    canvas.addEventListener('mousedown', e => {
+        painting = true;
+        const { r, c } = getCellFromEvent(e);
+        if (r >= 0 && r < GRID && c >= 0 && c < GRID) {
+            paintVal = grid[r][c] ? 0 : 1;
+            grid[r][c] = paintVal;
+            draw();
+        }
+    });
+    canvas.addEventListener('mousemove', e => {
+        if (!painting) return;
+        const { r, c } = getCellFromEvent(e);
+        if (r >= 0 && r < GRID && c >= 0 && c < GRID) {
+            grid[r][c] = paintVal;
+            draw();
+        }
+    });
+    canvas.addEventListener('mouseup', () => painting = false);
+    canvas.addEventListener('mouseleave', () => painting = false);
+
+    // Touch support
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const { r, c } = getCellFromEvent(touch);
+        if (r >= 0 && r < GRID && c >= 0 && c < GRID) {
+            painting = true;
+            paintVal = grid[r][c] ? 0 : 1;
+            grid[r][c] = paintVal;
+            draw();
+        }
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (!painting) return;
+        const touch = e.touches[0];
+        const { r, c } = getCellFromEvent(touch);
+        if (r >= 0 && r < GRID && c >= 0 && c < GRID) {
+            grid[r][c] = paintVal;
+            draw();
+        }
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => painting = false);
+
+    // Presets
+    const presets = {
+        glider: [[0,1],[1,2],[2,0],[2,1],[2,2]],
+        lwss: [[0,1],[0,4],[1,0],[2,0],[2,4],[3,0],[3,1],[3,2],[3,3]],
+        rpentomino: [[0,1],[0,2],[1,0],[1,1],[2,1]],
+        pulsar: (() => {
+            const pts = [];
+            const rows = [2,7,9,14], cols = [4,5,6,10,11,12];
+            // Top/bottom horizontal bars
+            for (const r of [2,7,9,14])
+                for (const c of [4,5,6,10,11,12]) pts.push([r,c]);
+            // Left/right vertical bars
+            for (const c of [2,7,9,14])
+                for (const r of [4,5,6,10,11,12]) pts.push([r,c]);
+            return pts;
+        })(),
+        gosper: [
+            [5,1],[5,2],[6,1],[6,2],
+            [3,13],[3,14],[4,12],[4,16],[5,11],[5,17],[6,11],[6,15],[6,17],[6,18],[7,11],[7,17],[8,12],[8,16],[9,13],[9,14],
+            [1,25],[2,23],[2,25],[3,21],[3,22],[4,21],[4,22],[5,21],[5,22],[6,23],[6,25],[7,25],
+            [3,35],[3,36],[4,35],[4,36]
+        ]
+    };
+
+    function loadPreset(name) {
+        clearGrid();
+        const pts = presets[name];
+        const offsetR = Math.floor(GRID / 2) - 8;
+        const offsetC = Math.floor(GRID / 2) - 8;
+        pts.forEach(([r, c]) => {
+            const nr = r + offsetR, nc = c + offsetC;
+            if (nr >= 0 && nr < GRID && nc >= 0 && nc < GRID) grid[nr][nc] = 1;
+        });
+        draw();
+    }
+
+    draw();
+    </script>
+</body>
+</html>

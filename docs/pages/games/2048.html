@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>2048 — Alex Hugli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css?v=4">
+    <style>
+        .board {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+            background: var(--bg-tertiary); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 8px; max-width: 400px; margin: 0 auto;
+            aspect-ratio: 1; touch-action: none;
+        }
+        .tile {
+            display: flex; align-items: center; justify-content: center;
+            border-radius: var(--radius-sm); font-family: var(--font-mono);
+            font-weight: 700; transition: all 0.12s ease;
+            aspect-ratio: 1; font-size: clamp(1.2rem, 4vw, 1.8rem);
+        }
+        .tile-0 { background: rgba(255,255,255,0.03); }
+        .tile-2 { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+        .tile-4 { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+        .tile-8 { background: rgba(245,158,11,0.3); color: #fbbf24; }
+        .tile-16 { background: rgba(245,158,11,0.45); color: #f59e0b; }
+        .tile-32 { background: rgba(239,68,68,0.35); color: #fca5a5; }
+        .tile-64 { background: rgba(239,68,68,0.5); color: #ef4444; }
+        .tile-128 { background: rgba(234,179,8,0.4); color: #fde047; font-size: clamp(1rem, 3.5vw, 1.5rem); }
+        .tile-256 { background: rgba(234,179,8,0.55); color: #eab308; font-size: clamp(1rem, 3.5vw, 1.5rem); }
+        .tile-512 { background: rgba(34,197,94,0.4); color: #86efac; font-size: clamp(1rem, 3.5vw, 1.5rem); }
+        .tile-1024 { background: rgba(59,130,246,0.5); color: #93c5fd; font-size: clamp(0.85rem, 3vw, 1.3rem); }
+        .tile-2048 { background: rgba(139,92,246,0.6); color: #c4b5fd; font-size: clamp(0.85rem, 3vw, 1.3rem); }
+        .tile-super { background: linear-gradient(135deg, var(--accent), #a78bfa); color: #fff; font-size: clamp(0.7rem, 2.5vw, 1.1rem); }
+        .tile.pop { animation: pop 0.15s ease; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+        .tile.spawn { animation: spawn 0.2s ease; }
+        @keyframes spawn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <a href="../demos.html" class="game-back-link">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Demos
+            </a>
+            <h1>2048</h1>
+            <p>Use arrow keys or swipe to slide tiles. Merge matching numbers to reach 2048.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="game-wrapper" style="max-width: 450px;">
+                <div class="game-stats">
+                    <span>Score: <strong id="score">0</strong></span>
+                    <span>Best: <strong id="best">0</strong></span>
+                </div>
+                <div class="board" id="board"></div>
+                <div class="game-controls" style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="newGame()">New Game</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="../contact.html">Contact</a></div></div></footer>
+
+    <script src="../../js/main.js?v=4"></script>
+    <script>
+    let grid, score, best, won, over;
+    best = parseInt(localStorage.getItem('2048-best') || '0');
+    document.getElementById('best').textContent = best;
+
+    function newGame() {
+        grid = Array.from({ length: 4 }, () => Array(4).fill(0));
+        score = 0; won = false; over = false;
+        document.getElementById('score').textContent = 0;
+        addRandom(); addRandom();
+        render();
+    }
+
+    function addRandom() {
+        const empty = [];
+        for (let r = 0; r < 4; r++)
+            for (let c = 0; c < 4; c++)
+                if (grid[r][c] === 0) empty.push([r, c]);
+        if (empty.length === 0) return;
+        const [r, c] = empty[Math.floor(Math.random() * empty.length)];
+        grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+        return `${r}-${c}`;
+    }
+
+    function slide(row) {
+        let arr = row.filter(v => v !== 0);
+        let merged = false;
+        for (let i = 0; i < arr.length - 1; i++) {
+            if (arr[i] === arr[i + 1]) {
+                arr[i] *= 2;
+                score += arr[i];
+                if (arr[i] === 2048) won = true;
+                arr.splice(i + 1, 1);
+                merged = true;
+            }
+        }
+        while (arr.length < 4) arr.push(0);
+        return { result: arr, changed: row.some((v, i) => v !== arr[i]) };
+    }
+
+    function move(dir) {
+        if (over) return;
+        let moved = false;
+        const rotated = dir === 1 || dir === 3; // up/down
+        const reversed = dir === 2 || dir === 3; // right/down
+
+        for (let i = 0; i < 4; i++) {
+            let row = [];
+            for (let j = 0; j < 4; j++) {
+                row.push(rotated ? grid[j][i] : grid[i][j]);
+            }
+            if (reversed) row.reverse();
+            const { result, changed } = slide(row);
+            if (changed) moved = true;
+            if (reversed) result.reverse();
+            for (let j = 0; j < 4; j++) {
+                if (rotated) grid[j][i] = result[j];
+                else grid[i][j] = result[j];
+            }
+        }
+
+        if (moved) {
+            const newCell = addRandom();
+            if (score > best) {
+                best = score;
+                localStorage.setItem('2048-best', best);
+                document.getElementById('best').textContent = best;
+            }
+            document.getElementById('score').textContent = score;
+            render(newCell);
+            if (!canMove()) {
+                over = true;
+                setTimeout(() => alert('Game Over! Score: ' + score), 200);
+            }
+            if (won) {
+                won = false; // Only alert once
+                setTimeout(() => alert('You reached 2048!'), 200);
+            }
+        }
+    }
+
+    function canMove() {
+        for (let r = 0; r < 4; r++)
+            for (let c = 0; c < 4; c++) {
+                if (grid[r][c] === 0) return true;
+                if (c < 3 && grid[r][c] === grid[r][c + 1]) return true;
+                if (r < 3 && grid[r][c] === grid[r + 1][c]) return true;
+            }
+        return false;
+    }
+
+    function tileClass(v) {
+        if (v === 0) return 'tile tile-0';
+        if (v <= 2048) return `tile tile-${v}`;
+        return 'tile tile-super';
+    }
+
+    function render(newCell) {
+        const board = document.getElementById('board');
+        board.innerHTML = '';
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                const div = document.createElement('div');
+                div.className = tileClass(grid[r][c]);
+                if (grid[r][c] > 0) div.textContent = grid[r][c];
+                if (newCell === `${r}-${c}`) div.classList.add('spawn');
+                board.appendChild(div);
+            }
+        }
+    }
+
+    // Keyboard
+    document.addEventListener('keydown', e => {
+        const map = { ArrowLeft: 0, ArrowUp: 1, ArrowRight: 2, ArrowDown: 3 };
+        if (map[e.key] !== undefined) { e.preventDefault(); move(map[e.key]); }
+    });
+
+    // Swipe
+    let touchStartX, touchStartY;
+    const board = document.getElementById('board');
+    board.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    board.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        const absDx = Math.abs(dx), absDy = Math.abs(dy);
+        if (Math.max(absDx, absDy) < 30) return;
+        if (absDx > absDy) move(dx > 0 ? 2 : 0);
+        else move(dy > 0 ? 3 : 1);
+    });
+
+    newGame();
+    </script>
+</body>
+</html>
