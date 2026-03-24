@@ -14,9 +14,19 @@ body.game-active html {
     overflow: hidden !important;
 }
 
-/* On mobile, make the game canvas fill the viewport when active */
+/* On mobile: hide page chrome entirely, game fills viewport */
 @media (max-width: 768px) {
-    body.game-active .survivor-canvas-wrap {
+    .survivor-page-header,
+    body .survivor-page-header {
+        display: none !important;
+    }
+
+    body .survivor-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body .survivor-canvas-wrap {
         position: fixed !important;
         top: 0;
         left: 0;
@@ -28,10 +38,8 @@ body.game-active html {
         z-index: 9999;
     }
 
-    body.game-active #navbar,
-    body.game-active .page-header,
-    body.game-active footer,
-    body.game-active .game-wrapper > :not(.game-canvas-wrap) {
+    body #navbar,
+    body footer {
         display: none !important;
     }
 }
