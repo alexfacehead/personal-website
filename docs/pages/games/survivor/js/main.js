@@ -146,6 +146,7 @@ class Game {
         this.player.weapons = this.weaponManager.getWeaponIds();
 
         this.state = STATE.PLAYING;
+        document.body.classList.add('game-active');
         this.menus.hideTitle();
         this.menus.hideDeath();
         this.menus.hidePause();
@@ -162,6 +163,7 @@ class Game {
     _returnToMenu() {
         this.menus.hidePause();
         this.state = STATE.TITLE;
+        document.body.classList.remove('game-active');
         this.menus.showTitle(this.metaSystem);
     }
 
@@ -233,6 +235,7 @@ class Game {
         // Victory check — survive 15 minutes
         if (this.gameTime >= VICTORY_TIME) {
             this.state = STATE.VICTORY;
+            document.body.classList.remove('game-active');
             // Victory coin bonus
             const victoryBonus = 100;
             this.coinsThisRun += victoryBonus;
@@ -327,6 +330,7 @@ class Game {
                 }
             } else {
                 this.state = STATE.GAME_OVER;
+                document.body.classList.remove('game-active');
                 this.menus.showDeath(this.player, this.waveSystem, this.coinsThisRun);
                 return;
             }

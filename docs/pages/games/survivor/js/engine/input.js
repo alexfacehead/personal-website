@@ -28,6 +28,13 @@ export class Input {
 
         this._bindKeyboard();
         this._bindTouch();
+
+        // Prevent page scroll/bounce during gameplay on mobile
+        document.addEventListener('touchmove', (e) => {
+            if (document.body.classList.contains('game-active')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     }
 
     _bindKeyboard() {
