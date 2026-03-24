@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Void Survivors — Test Suite</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a0a; color: #e5e5e5; font-family: 'JetBrains Mono', 'Courier New', monospace; padding: 2rem; }
+        h1 { color: #a855f7; margin-bottom: 1rem; font-size: 1.5rem; }
+        h3 { color: #ccc; margin: 1rem 0 0.5rem; font-size: 1rem; }
+        .test-summary { padding: 1rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; }
+        .test-summary.pass { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .test-summary.fail { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .test-suite { margin-bottom: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px; }
+        .test-case { padding: 0.3rem 0.5rem; margin: 0.25rem 0; border-radius: 4px; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 0.5rem; }
+        .test-case.pass { color: #86efac; }
+        .test-case.fail { color: #fca5a5; background: rgba(239,68,68,0.08); }
+        .test-icon { font-weight: bold; flex-shrink: 0; }
+        .test-error { color: #f87171; font-size: 0.8rem; margin-top: 0.25rem; padding-left: 1.5rem; }
+        .loading { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>Void Survivors — Test Suite</h1>
+    <div id="results" class="loading">Running tests...</div>
+
+    <script type="module">
+        import { TestRunner } from './tests/runner.js';
+        import { registerTests as spatialHashTests } from './tests/spatial-hash.test.js';
+        import { registerTests as poolTests } from './tests/pool.test.js';
+        import { registerTests as combatTests } from './tests/combat.test.js';
+        import { registerTests as wavesTests } from './tests/waves.test.js';
+        import { registerTests as upgradesTests } from './tests/upgrades.test.js';
+
+        const runner = new TestRunner();
+
+        spatialHashTests(runner);
+        poolTests(runner);
+        combatTests(runner);
+        wavesTests(runner);
+        upgradesTests(runner);
+
+        const results = await runner.run();
+        runner.renderResults(document.getElementById('results'));
+
+        // Log summary for preview tools
+        console.log(`Tests: ${results.passed} passed, ${results.failed} failed`);
+        if (results.errors.length > 0) {
+            console.error('Failures:', results.errors);
+        }
+    </script>
+</body>
+</html>

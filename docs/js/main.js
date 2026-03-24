@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Load navbar
   fetch(document.querySelector('[id="navbar"]') ?
-    (window.location.pathname.includes('/pages/games/') ? '../../navbar.html' :
+    (window.location.pathname.includes('/pages/games/survivor/') ? '../../../navbar.html' :
+     window.location.pathname.includes('/pages/games/') ? '../../navbar.html' :
      window.location.pathname.includes('/pages/') ? '../navbar.html' : 'navbar.html') : '')
     .then(r => r.text())
     .then(html => {

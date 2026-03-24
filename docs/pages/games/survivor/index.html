@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Void Survivors — Alex Hugli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/style.css?v=4">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <a href="../../demos.html" class="game-back-link">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Demos
+            </a>
+            <h1>Void Survivors</h1>
+            <p>Survive waves of geometric enemies in an infinite neon arena. Weapons auto-fire &mdash; just move, dodge, and choose your upgrades wisely.</p>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Inspired by <a href="https://store.steampowered.com/app/1794680/Vampire_Survivors/" target="_blank" rel="noopener noreferrer" style="color: #a855f7; text-decoration: none; border-bottom: 1px solid rgba(168,85,247,0.3);">Vampire Survivors</a> by poncle. Built from scratch with vanilla JS &amp; Canvas 2D.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="game-wrapper survivor-wrapper">
+                <div class="game-canvas-wrap survivor-canvas-wrap">
+                    <canvas id="game"></canvas>
+
+                    <!-- Title Screen -->
+                    <div class="game-overlay" id="title-screen">
+                        <div class="title-content">
+                            <h2 class="title-glow">VOID SURVIVORS</h2>
+                            <p class="title-sub">Survive the swarm. Evolve your arsenal.</p>
+                            <div class="title-controls">
+                                <span><kbd>WASD</kbd> / <kbd>Arrows</kbd> Move</span>
+                                <span><kbd>Space</kbd> Dodge Roll</span>
+                                <span><kbd>P</kbd> / <kbd>Esc</kbd> Pause</span>
+                            </div>
+                            <button class="btn btn-primary btn-glow" id="start-btn">Start Game</button>
+                        </div>
+                    </div>
+
+                    <!-- Level Up Screen -->
+                    <div class="game-overlay hidden" id="levelup-screen">
+                        <div class="levelup-content">
+                            <h2 class="levelup-title">LEVEL UP!</h2>
+                            <div class="levelup-cards" id="levelup-cards"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pause Screen -->
+                    <div class="game-overlay hidden" id="pause-screen">
+                        <div class="pause-content">
+                            <h2>PAUSED</h2>
+                            <button class="btn btn-primary" id="resume-btn">Resume</button>
+                            <button class="btn btn-secondary" id="restart-btn">Restart</button>
+                        </div>
+                    </div>
+
+                    <!-- Death Screen -->
+                    <div class="game-overlay hidden" id="death-screen">
+                        <div class="death-content">
+                            <h2 class="death-title">VOID CLAIMED</h2>
+                            <div class="death-stats" id="death-stats"></div>
+                            <button class="btn btn-primary btn-glow" id="retry-btn">Try Again</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="../../contact.html">Contact</a></div></div></footer>
+
+    <script src="../../../js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

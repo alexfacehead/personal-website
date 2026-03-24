@@ -57,6 +57,12 @@ def render_game(page_name):
     return send_from_directory('docs/pages/games', page_name)
 
 
+@app.route('/pages/games/survivor/')
+@app.route('/pages/games/survivor/<path:filename>')
+def survivor_game(filename='index.html'):
+    return send_from_directory('docs/pages/games/survivor', filename)
+
+
 # --- Error handlers -------------------------------------------------------
 
 ERROR_TEMPLATE = '''<!DOCTYPE html>

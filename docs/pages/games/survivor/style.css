@@ -1,0 +1,313 @@
+/* Void Survivors — Game-specific styles */
+
+.survivor-wrapper {
+    max-width: 100%;
+}
+
+.survivor-canvas-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 80vh;
+    background: #050510;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.survivor-canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: auto;
+}
+
+/* --- Overlays --- */
+
+.game-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 5, 16, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    transition: opacity 0.3s ease;
+}
+
+.game-overlay.hidden {
+    display: none;
+}
+
+/* --- Title Screen --- */
+
+.title-content {
+    text-align: center;
+}
+
+.title-glow {
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #a855f7;
+    text-shadow:
+        0 0 10px rgba(168, 85, 247, 0.8),
+        0 0 30px rgba(168, 85, 247, 0.5),
+        0 0 60px rgba(168, 85, 247, 0.3);
+    margin-bottom: 0.5rem;
+    animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+    0%, 100% { text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 30px rgba(168, 85, 247, 0.5), 0 0 60px rgba(168, 85, 247, 0.3); }
+    50% { text-shadow: 0 0 15px rgba(168, 85, 247, 1), 0 0 40px rgba(168, 85, 247, 0.7), 0 0 80px rgba(168, 85, 247, 0.4); }
+}
+
+.title-sub {
+    color: #888;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    margin-bottom: 1.5rem;
+}
+
+.title-controls {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.title-controls kbd {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background: #1a1a2e;
+    color: #ccc;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.btn-glow {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    transition: box-shadow 0.3s ease, transform 0.15s ease;
+}
+
+.btn-glow:hover {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+    transform: translateY(-2px);
+}
+
+/* --- Level Up Screen --- */
+
+.levelup-content {
+    text-align: center;
+    width: 90%;
+    max-width: 700px;
+}
+
+.levelup-title {
+    font-size: 2rem;
+    color: #fbbf24;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+}
+
+.levelup-cards {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.levelup-card {
+    flex: 1;
+    min-width: 160px;
+    max-width: 200px;
+    background: #111128;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+.levelup-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.levelup-card.rarity-common { border-color: #666; }
+.levelup-card.rarity-common:hover { border-color: #999; }
+
+.levelup-card.rarity-uncommon { border-color: #22c55e; }
+.levelup-card.rarity-uncommon:hover { border-color: #4ade80; box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+
+.levelup-card.rarity-rare { border-color: #3b82f6; }
+.levelup-card.rarity-rare:hover { border-color: #60a5fa; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+
+.levelup-card.rarity-epic { border-color: #a855f7; }
+.levelup-card.rarity-epic:hover { border-color: #c084fc; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+
+.levelup-card.rarity-legendary { border-color: #f59e0b; }
+.levelup-card.rarity-legendary:hover { border-color: #fbbf24; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+
+.levelup-card-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 0.75rem;
+}
+
+.levelup-card-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #eee;
+    margin-bottom: 0.35rem;
+}
+
+.levelup-card-desc {
+    font-size: 0.75rem;
+    color: #888;
+    line-height: 1.4;
+}
+
+.levelup-card-level {
+    font-size: 0.7rem;
+    color: #555;
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- Pause Screen --- */
+
+.pause-content {
+    text-align: center;
+}
+
+.pause-content h2 {
+    font-size: 2.5rem;
+    color: #ccc;
+    letter-spacing: 0.2em;
+    margin-bottom: 2rem;
+}
+
+.pause-content .btn {
+    display: block;
+    width: 200px;
+    margin: 0.5rem auto;
+}
+
+/* --- Death Screen --- */
+
+.death-content {
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.death-title {
+    font-size: 2.5rem;
+    color: #ef4444;
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+.death-stats {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.death-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #222;
+    font-size: 0.9rem;
+}
+
+.death-stat-label {
+    color: #888;
+}
+
+.death-stat-value {
+    color: #eee;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- Touch Controls --- */
+
+.touch-joystick {
+    position: absolute;
+    bottom: 80px;
+    left: 60px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    display: none;
+    z-index: 5;
+}
+
+.touch-joystick-knob {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(168, 85, 247, 0.4);
+    border: 2px solid rgba(168, 85, 247, 0.6);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.touch-dodge-btn {
+    position: absolute;
+    bottom: 100px;
+    right: 60px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+/* Show touch controls on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .touch-joystick,
+    .touch-dodge-btn {
+        display: flex;
+    }
+    .title-controls {
+        display: none;
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .levelup-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+    .levelup-card {
+        max-width: 90%;
+        min-width: unset;
+    }
+    .title-glow {
+        font-size: 1.8rem;
+    }
+}
