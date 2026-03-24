@@ -29,12 +29,19 @@ export class Input {
         this._bindKeyboard();
         this._bindTouch();
 
-        // Prevent page scroll/bounce during gameplay on mobile
-        document.addEventListener('touchmove', (e) => {
-            if (document.body.classList.contains('game-active')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        // Prevent ALL touch-based scrolling/bouncing during gameplay on mobile
+        for (const evt of ['touchmove', 'touchstart']) {
+            document.addEventListener(evt, (e) => {
+                if (document.body.classList.contains('game-active')) {
+                    // Allow touches on game UI buttons (upgrade choices, etc.)
+                    const target = e.target;
+                    if (target.closest && (target.closest('button') || target.closest('.upgrade-card') || target.closest('.shop-item'))) {
+                        return;
+                    }
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
     }
 
     _bindKeyboard() {

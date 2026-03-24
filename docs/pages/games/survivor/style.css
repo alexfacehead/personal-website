@@ -2,11 +2,38 @@
 
 /* Prevent scroll/zoom on mobile when game is active */
 body.game-active {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    touch-action: none;
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: auto !important;
+}
+
+body.game-active html {
+    overflow: hidden !important;
+}
+
+/* On mobile, make the game canvas fill the viewport when active */
+@media (max-width: 768px) {
+    body.game-active .survivor-canvas-wrap {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        border-radius: 0 !important;
+        z-index: 9999;
+    }
+
+    body.game-active #navbar,
+    body.game-active .page-header,
+    body.game-active footer,
+    body.game-active .game-wrapper > :not(.game-canvas-wrap) {
+        display: none !important;
+    }
 }
 
 .survivor-wrapper {
@@ -21,6 +48,10 @@ body.game-active {
     background: #050510;
     border-radius: 8px;
     overflow: hidden;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .survivor-canvas-wrap canvas {
