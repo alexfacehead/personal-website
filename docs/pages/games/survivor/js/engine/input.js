@@ -65,12 +65,13 @@ export class Input {
     }
 
     _bindTouch() {
-        const c = this.canvas;
+        // Bind to the canvas wrapper (covers full screen on mobile) or fall back to canvas
+        const c = this.canvas.closest('.survivor-canvas-wrap') || this.canvas;
         const maxKnobDist = 40; // Max pixel offset for joystick knob
 
         c.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            const rect = c.getBoundingClientRect();
+            const rect = this.canvas.getBoundingClientRect();
 
             for (const touch of e.changedTouches) {
                 const x = touch.clientX - rect.left;
@@ -105,7 +106,7 @@ export class Input {
             e.preventDefault();
             for (const touch of e.changedTouches) {
                 if (touch.identifier === this._touchJoystickId) {
-                    const rect = c.getBoundingClientRect();
+                    const rect = this.canvas.getBoundingClientRect();
                     this.touchCurrentX = touch.clientX - rect.left;
                     this.touchCurrentY = touch.clientY - rect.top;
                     // Move knob
