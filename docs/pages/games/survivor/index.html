@@ -9,25 +9,8 @@
     <link rel="stylesheet" href="../../../css/style.css?v=4">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div id="navbar"></div>
-
-    <section class="page-header">
-        <div class="container">
-            <a href="../../demos.html" class="game-back-link">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                Back to Demos
-            </a>
-            <h1>Void Survivors</h1>
-            <p>Survive waves of geometric enemies in an infinite neon arena. Weapons auto-fire &mdash; just move, dodge, and choose your upgrades wisely.</p>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Inspired by <a href="https://store.steampowered.com/app/1794680/Vampire_Survivors/" target="_blank" rel="noopener noreferrer" style="color: #a855f7; text-decoration: none; border-bottom: 1px solid rgba(168,85,247,0.3);">Vampire Survivors</a> by poncle. Built from scratch with vanilla JS &amp; Canvas 2D.</p>
-        </div>
-    </section>
-
-    <section>
-        <div class="container">
-            <div class="game-wrapper survivor-wrapper">
-                <div class="game-canvas-wrap survivor-canvas-wrap">
+<body style="margin:0;padding:0;overflow:hidden;background:#050510;">
+    <div class="game-canvas-wrap survivor-canvas-wrap" style="position:fixed;top:0;left:0;width:100vw;height:100vh;max-height:none;aspect-ratio:auto;border-radius:0;">
                     <canvas id="game"></canvas>
 
                     <!-- Touch Controls -->
@@ -103,13 +86,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+    </div>
 
-    <footer class="footer"><div class="container"><span class="footer-text">&copy; 2026 Alex Hugli</span><div class="footer-links"><a href="https://github.com/alexfacehead" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/alex-hugli/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="../../contact.html">Contact</a></div></div></footer>
-
-    <script src="../../../js/main.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
