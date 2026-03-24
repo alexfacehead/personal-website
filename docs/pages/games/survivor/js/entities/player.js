@@ -18,6 +18,7 @@ export class Player {
         this.hp = 100;
         this.maxHp = 100;
         this.speed = 160;
+        this.baseSpeed = 160;
         this.pickupRadius = 50;
         this.damageBonus = 0;
         this.armor = 0;
@@ -30,6 +31,18 @@ export class Player {
         this.xp = 0;
         this.level = 1;
         this.xpToNext = 10;
+        this.xpMultiplier = 1.0;
+        this.revivesLeft = 0;
+        this.lifesteal = 0;
+        this.luckBonus = 0;
+        this.areaBonus = 0;
+        this.bonusProjectiles = 0;
+        this.durationBonus = 0;
+        this.doubleXpChance = 0;
+        this.shieldCharges = 0;
+        this.shieldMaxCharges = 0;
+        this.shieldRechargeTime = 15;
+        this.shieldTimer = 0;
 
         // Dodge roll
         this.dodgeCooldown = 0;
@@ -55,6 +68,8 @@ export class Player {
         this.passives = {};
         // Synergies active
         this.synergies = {};
+        // Weapons discovered (ever seen in upgrade choices)
+        this.discoveredWeapons = new Set();
 
         // Stats tracking
         this.kills = 0;
@@ -103,8 +118,9 @@ export class Player {
                 particles.emit(FX.dodgeTrail(this.x, this.y));
             }
         } else {
-            this.vx = move.x * this.speed;
-            this.vy = move.y * this.speed;
+            const speedMult = this._bloodRushActive ? 1.25 : 1.0;
+            this.vx = move.x * this.speed * speedMult;
+            this.vy = move.y * this.speed * speedMult;
         }
 
         this.x += this.vx * dt;
@@ -123,18 +139,62 @@ export class Player {
 
         // Damage flash
         if (this.flashTimer > 0) this.flashTimer -= dt;
+        if (this.damageFlashTimer > 0) this.damageFlashTimer -= dt;
+
+        // Shield recharge
+        if (this.shieldMaxCharges > 0 && this.shieldCharges < this.shieldMaxCharges) {
+            this.shieldTimer -= dt;
+            if (this.shieldTimer <= 0) {
+                this.shieldCharges++;
+                this.shieldTimer = this.shieldRechargeTime;
+            }
+        }
 
         // Slow rotation for visual flair
         this.rotation += dt * 0.5;
+
+        // Blood Rush synergy: below 40% HP buffs
+        if (this.synergies.bloodRush) {
+            const hpRatio = this.hp / this.maxHp;
+            const wasActive = this._bloodRushActive;
+            this._bloodRushActive = hpRatio < 0.4;
+            if (this._bloodRushActive) {
+                this._bloodRushDamageBonus = 0.40;
+                this._bloodRushCdrBonus = 0.50;
+            } else {
+                this._bloodRushDamageBonus = 0;
+                this._bloodRushCdrBonus = 0;
+            }
+        }
     }
 
     takeDamage(amount, audio) {
         if (this.invincible || this.hitIFrames > 0) return false;
 
+        // Void Shield: absorb hit
+        if (this.shieldCharges > 0) {
+            this.shieldCharges--;
+            this.shieldTimer = this.shieldRechargeTime;
+            this.flashTimer = 0.1;
+            this.hitIFrames = 0.3;
+            return false;
+        }
+
         const finalDamage = Math.max(1, amount - this.armor);
         this.hp -= finalDamage;
         this.flashTimer = 0.15;
+        this.damageFlashTimer = 0.25;
         this.hitIFrames = this.hitIFramesDuration;
+
+        // Iron Skin: reflect 50% damage
+        if (this.synergies.ironSkin) {
+            this._reflectDamage = Math.floor(amount * 0.5);
+        }
+
+        // Juggernaut: trigger shockwave
+        if (this.synergies.juggernaut) {
+            this._juggernautShockwave = true;
+        }
 
         if (audio) audio.hit();
 
@@ -147,7 +207,9 @@ export class Player {
     }
 
     addXp(amount, particles, audio) {
-        this.xp += amount;
+        const synergyMult = this.synergies.vortexMagnet ? 1.5 : 1.0;
+        const dblXp = (this.doubleXpChance > 0 && Math.random() < this.doubleXpChance) ? 2.0 : 1.0;
+        this.xp += Math.floor(amount * synergyMult * this.xpMultiplier * dblXp);
         this.gemsCollected++;
 
         while (this.xp >= this.xpToNext) {
@@ -192,6 +254,21 @@ export class Player {
             ctx.arc(this.x, this.y, this.radius + 6, -Math.PI / 2,
                 -Math.PI / 2 + Math.PI * 2 * progress);
             ctx.stroke();
+        }
+
+        // Damage flash — red expanding ring
+        if (this.damageFlashTimer > 0) {
+            const t = this.damageFlashTimer / 0.25;
+            const ringRadius = this.radius + 15 * (1 - t);
+            ctx.save();
+            ctx.strokeStyle = `rgba(239, 68, 68, ${t * 0.8})`;
+            ctx.lineWidth = 2 * t;
+            ctx.shadowColor = '#ef4444';
+            ctx.shadowBlur = 10 * t;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, ringRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
         }
 
         // Player body — glowing hexagon

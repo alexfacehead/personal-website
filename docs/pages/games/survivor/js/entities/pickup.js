@@ -5,7 +5,8 @@ export const PICKUP_TYPES = {
     xp_medium: { xp: 5, color: '#3b82f6', size: 6, shape: 'diamond' },
     xp_large: { xp: 20, color: '#a855f7', size: 8, shape: 'diamond' },
     health: { heal: 20, color: '#ef4444', size: 6, shape: 'cross' },
-    chest: { isChest: true, color: '#fbbf24', size: 10, shape: 'rect' }
+    chest: { isChest: true, color: '#fbbf24', size: 10, shape: 'rect' },
+    coin: { isCoin: true, coinValue: 1, color: '#fbbf24', size: 5, shape: 'circle' }
 };
 
 export function initPickup(pickup, type, x, y) {
@@ -18,6 +19,8 @@ export function initPickup(pickup, type, x, y) {
     pickup.xp = def.xp || 0;
     pickup.heal = def.heal || 0;
     pickup.isChest = def.isChest || false;
+    pickup.isCoin = def.isCoin || false;
+    pickup.coinValue = def.coinValue || 0;
     pickup.color = def.color;
     pickup.size = def.size;
     pickup.shape = def.shape;
@@ -106,6 +109,22 @@ export function renderPickup(pickup, ctx, renderer) {
             // Chest detail
             ctx.fillStyle = '#92400e';
             ctx.fillRect(pickup.x - s + 2, y - 1, s * 2 - 4, 2);
+            ctx.restore();
+            break;
+
+        case 'circle':
+            ctx.save();
+            ctx.shadowColor = pickup.color;
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = pickup.color;
+            ctx.beginPath();
+            ctx.arc(pickup.x, y, s, 0, Math.PI * 2);
+            ctx.fill();
+            // Inner shine
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.beginPath();
+            ctx.arc(pickup.x - s * 0.2, y - s * 0.2, s * 0.4, 0, Math.PI * 2);
+            ctx.fill();
             ctx.restore();
             break;
     }

@@ -17,11 +17,14 @@ export class UpgradeSystem {
     generateChoices(player, weaponManager, count = 3) {
         const candidates = [];
 
-        // 1. New weapon unlocks (if player has fewer than 6 weapons)
+        // 1. New weapon unlocks (if player has fewer than max weapons)
         const heldWeapons = weaponManager.getWeaponIds();
-        if (heldWeapons.length < 6) {
+        const maxWeapons = player.maxWeapons || 6;
+        if (heldWeapons.length < maxWeapons) {
             for (const [id, def] of Object.entries(WEAPON_DEFS)) {
                 if (!weaponManager.hasWeapon(id)) {
+                    // Rare/legendary weapons are 75% less likely to appear
+                    const rarityMult = (def.rarity === 'rare' || def.rarity === 'legendary') ? 0.25 : 1.0;
                     candidates.push({
                         type: 'weapon_new',
                         id,
@@ -30,7 +33,7 @@ export class UpgradeSystem {
                         icon: def.icon,
                         color: def.color,
                         rarity: def.rarity,
-                        weight: RARITY_WEIGHTS[def.rarity] || 10
+                        weight: (RARITY_WEIGHTS[def.rarity] || 10) * rarityMult
                     });
                 }
             }
@@ -76,8 +79,9 @@ export class UpgradeSystem {
         // 4. Synergy upgrades (check prerequisites)
         for (const [id, def] of Object.entries(SYNERGY_UPGRADES)) {
             if (this.appliedSynergies.has(id)) continue;
-            const hasAll = def.requires.every(wid => weaponManager.hasWeapon(wid));
-            if (hasAll) {
+            const hasWeapons = (def.requires || []).every(wid => weaponManager.hasWeapon(wid));
+            const hasPassives = (def.requiresPassive || []).every(pid => (this.passiveLevels[pid] || 0) >= (def.passiveMinLevel || 2));
+            if (hasWeapons && hasPassives) {
                 candidates.push({
                     type: 'synergy',
                     id,
@@ -101,17 +105,36 @@ export class UpgradeSystem {
             }];
         }
 
+        // Guarantee a synergy slot if any synergies are available
+        const synergyChoices = candidates.filter(c => c.type === 'synergy');
+        if (synergyChoices.length > 0) {
+            const guaranteed = synergyChoices[Math.floor(Math.random() * synergyChoices.length)];
+            const others = this._weightedSample(
+                candidates.filter(c => c !== guaranteed),
+                count - 1
+            );
+            return this._shuffle([guaranteed, ...others]).slice(0, count);
+        }
+
         // Guarantee at least one weapon unlock in early levels
         if (player.level <= 3 && heldWeapons.length < 2) {
             const weaponChoices = candidates.filter(c => c.type === 'weapon_new');
             if (weaponChoices.length > 0) {
-                // Ensure at least one weapon is in the choices
                 const guaranteed = weaponChoices[Math.floor(Math.random() * weaponChoices.length)];
                 const others = this._weightedSample(
                     candidates.filter(c => c !== guaranteed),
                     count - 1
                 );
                 return this._shuffle([guaranteed, ...others]).slice(0, count);
+            }
+        }
+
+        // Apply luck bonus — boost rare/legendary weights
+        if (player.luckBonus > 0) {
+            for (const c of candidates) {
+                if (c.rarity === 'rare' || c.rarity === 'legendary') {
+                    c.weight *= (1 + player.luckBonus);
+                }
             }
         }
 

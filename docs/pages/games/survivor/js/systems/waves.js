@@ -4,10 +4,10 @@ import { ENEMY_TYPES } from '../data/enemies.js';
 
 const ENEMY_UNLOCK_TIMES = {
     swarmer: 0,
-    crawler: 30,
-    spitter: 60,
-    exploder: 120,
-    ghost: 180
+    crawler: 45,
+    spitter: 90,
+    exploder: 180,
+    ghost: 270
 };
 
 const BOSS_INTERVAL = 300; // 5 minutes
@@ -19,7 +19,7 @@ export class WaveSystem {
         this.difficulty = 1;
         this.surgeTimer = 0;
         this.surgeActive = false;
-        this.nextSurge = 45; // first surge at 45s
+        this.nextSurge = 60; // first surge at 60s
         this.bossSpawnedCount = 0;
         this.bossAlive = false;
         this.totalSpawned = 0;
@@ -42,8 +42,8 @@ export class WaveSystem {
     }
 
     getSpawnRate(difficulty) {
-        // Base rate: 1 enemy per second, scaling with difficulty
-        return Math.max(0.08, 1.0 / (difficulty * 0.8));
+        // Base rate: ~1 enemy per 1.5s, scaling more gently with difficulty
+        return Math.max(0.12, 1.1 / (difficulty * 0.7));
     }
 
     getAvailableEnemyTypes(time) {
@@ -149,7 +149,7 @@ export class WaveSystem {
             const type = this.selectEnemyType(available, this.difficulty);
 
             // Sometimes spawn groups
-            const groupSize = this.difficulty > 3 && Math.random() < 0.2 ? Math.floor(Math.random() * 3) + 2 : 1;
+            const groupSize = this.difficulty > 3 && Math.random() < 0.12 ? Math.floor(Math.random() * 3) + 2 : 1;
             const positions = groupSize > 1
                 ? this.getGroupSpawnPositions(playerX, playerY, canvasWidth, canvasHeight, groupSize)
                 : [this.getSpawnPosition(playerX, playerY, canvasWidth, canvasHeight)];

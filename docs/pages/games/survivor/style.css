@@ -288,12 +288,22 @@
 
 /* Show touch controls on touch devices */
 @media (hover: none) and (pointer: coarse) {
-    .touch-joystick,
+    .touch-joystick {
+        display: flex;
+        opacity: 0.5;
+    }
     .touch-dodge-btn {
         display: flex;
     }
     .title-controls {
         display: none;
+    }
+    .survivor-canvas-wrap {
+        aspect-ratio: unset;
+        max-height: unset;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
     }
 }
 
@@ -306,8 +316,20 @@
     .levelup-card {
         max-width: 90%;
         min-width: unset;
+        padding: 1rem 0.75rem;
+        min-height: 60px;
+    }
+    .levelup-card-name {
+        font-size: 0.9rem;
+    }
+    .levelup-card-desc {
+        font-size: 0.7rem;
     }
     .title-glow {
         font-size: 1.8rem;
+    }
+    .death-content,
+    .pause-content {
+        padding: 1rem;
     }
 }

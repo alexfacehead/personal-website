@@ -6,6 +6,7 @@ export class Input {
         this.keys = {};
         this.justPressed = {};
         this._prevKeys = {};
+        this._keyDownQueue = new Set(); // Buffered presses that survive quick release
 
         // Touch joystick state
         this.touchActive = false;
@@ -20,6 +21,11 @@ export class Input {
         // Gamepad
         this.gamepadIndex = -1;
 
+        // DOM joystick elements
+        this._joystickEl = document.getElementById('touch-joystick');
+        this._joystickKnob = document.getElementById('touch-joystick-knob');
+        this._dodgeBtn = document.getElementById('touch-dodge-btn');
+
         this._bindKeyboard();
         this._bindTouch();
     }
@@ -29,7 +35,9 @@ export class Input {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Escape'].includes(e.key)) {
                 e.preventDefault();
             }
-            this.keys[e.key.toLowerCase()] = true;
+            const k = e.key.toLowerCase();
+            this.keys[k] = true;
+            this._keyDownQueue.add(k); // Buffer so quick press+release isn't lost
         });
 
         window.addEventListener('keyup', (e) => {
@@ -44,6 +52,7 @@ export class Input {
 
     _bindTouch() {
         const c = this.canvas;
+        const maxKnobDist = 40; // Max pixel offset for joystick knob
 
         c.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -61,6 +70,15 @@ export class Input {
                     this.touchStartY = y;
                     this.touchCurrentX = x;
                     this.touchCurrentY = y;
+                    // Show joystick at touch position
+                    if (this._joystickEl) {
+                        this._joystickEl.style.left = (x - 60) + 'px';
+                        this._joystickEl.style.top = (y - 60) + 'px';
+                        this._joystickEl.style.bottom = 'auto';
+                        this._joystickEl.style.display = 'flex';
+                        this._joystickEl.style.opacity = '1';
+                    }
+                    this._updateKnob(0, 0);
                 } else {
                     // Right half = dodge
                     this._touchDodgeId = touch.identifier;
@@ -76,6 +94,15 @@ export class Input {
                     const rect = c.getBoundingClientRect();
                     this.touchCurrentX = touch.clientX - rect.left;
                     this.touchCurrentY = touch.clientY - rect.top;
+                    // Move knob
+                    let dx = this.touchCurrentX - this.touchStartX;
+                    let dy = this.touchCurrentY - this.touchStartY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > maxKnobDist) {
+                        dx = (dx / dist) * maxKnobDist;
+                        dy = (dy / dist) * maxKnobDist;
+                    }
+                    this._updateKnob(dx, dy);
                 }
             }
         }, { passive: false });
@@ -85,6 +112,10 @@ export class Input {
                 if (touch.identifier === this._touchJoystickId) {
                     this.touchActive = false;
                     this._touchJoystickId = null;
+                    this._updateKnob(0, 0);
+                    if (this._joystickEl) {
+                        this._joystickEl.style.opacity = '0.5';
+                    }
                 }
                 if (touch.identifier === this._touchDodgeId) {
                     this._touchDodgeId = null;
@@ -94,6 +125,22 @@ export class Input {
 
         c.addEventListener('touchend', endTouch);
         c.addEventListener('touchcancel', endTouch);
+
+        // Dodge button
+        if (this._dodgeBtn) {
+            this._dodgeBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.touchDodge = true;
+                this._keyDownQueue.add(' ');
+            }, { passive: false });
+        }
+    }
+
+    _updateKnob(dx, dy) {
+        if (this._joystickKnob) {
+            this._joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+        }
     }
 
     update() {
@@ -104,6 +151,11 @@ export class Input {
                 this.justPressed[key] = true;
             }
         }
+        // Also include buffered presses (handles quick press+release between frames)
+        for (const key of this._keyDownQueue) {
+            this.justPressed[key] = true;
+        }
+        this._keyDownQueue.clear();
         this._prevKeys = { ...this.keys };
 
         // Reset one-shot touch inputs

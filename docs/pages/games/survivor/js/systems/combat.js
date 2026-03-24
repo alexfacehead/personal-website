@@ -15,18 +15,37 @@ export function calculateDamage(baseDamage, damageBonus = 0, critChance = 0, cri
 export function applyDamageToEnemy(enemy, baseDamage, player, particles, audio, FX) {
     if (enemy.iFrameTimer > 0) return { dealt: 0, killed: false };
 
+    const totalDamageBonus = (player.damageBonus || 0) + (player._bloodRushDamageBonus || 0);
+    const critMult = player.synergies?.overcharge ? 3.0 : (player.critMultiplier || 2);
     const { damage, isCrit } = calculateDamage(
         baseDamage,
-        player.damageBonus,
+        totalDamageBonus,
         player.critChance,
-        player.critMultiplier
+        critMult
     );
 
-    enemy.hp -= damage;
+    // Hex Ring damage amplification
+    const hexAmp = (enemy._hexed && enemy._hexTimer > 0) ? (1 + enemy._hexed) : 1;
+    const finalDmg = damage * hexAmp;
+    enemy.hp -= finalDmg;
     enemy.flashTimer = 0.1;
     enemy.iFrameTimer = 0.05; // Brief i-frames to prevent multi-hit in same frame
 
-    player.damageDealt += damage;
+    player.damageDealt += finalDmg;
+
+    // Lifesteal (capped at 1 HP per hit, max 5 HP/sec)
+    if (player.lifesteal > 0) {
+        const now = performance.now();
+        if (!player._lifestealLastReset || now - player._lifestealLastReset > 1000) {
+            player._lifestealLastReset = now;
+            player._lifestealThisSec = 0;
+        }
+        if (player._lifestealThisSec < 5) {
+            const healed = Math.min(finalDmg * player.lifesteal, 1);
+            player.hp = Math.min(player.maxHp, player.hp + healed);
+            player._lifestealThisSec += healed;
+        }
+    }
 
     if (particles && FX) {
         particles.emit(FX.damage(enemy.x, enemy.y));
@@ -34,10 +53,10 @@ export function applyDamageToEnemy(enemy, baseDamage, player, particles, audio, 
     if (audio) audio.hit();
 
     if (enemy.hp <= 0) {
-        return { dealt: damage, killed: true, isCrit };
+        return { dealt: finalDmg, killed: true, isCrit };
     }
 
-    return { dealt: damage, killed: false, isCrit };
+    return { dealt: finalDmg, killed: false, isCrit };
 }
 
 export function applyKnockback(enemy, sourceX, sourceY, force) {
