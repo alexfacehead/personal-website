@@ -88,15 +88,17 @@
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: safe center;
     justify-content: center;
     background: rgba(5, 5, 16, 0.85);
     touch-action: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     backdrop-filter: blur(4px);
     z-index: 10;
     transition: opacity 0.3s ease;
+    padding: 1rem 0;
 }
 
 .game-overlay.hidden {
@@ -170,10 +172,10 @@
     text-align: center;
     width: 90%;
     max-width: 700px;
-    max-height: 90vh;
-    overflow-y: auto;
+    margin: auto;
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 2rem;
 }
 
 .levelup-title {

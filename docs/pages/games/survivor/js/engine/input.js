@@ -108,6 +108,11 @@ export class Input {
         }, { passive: false });
 
         c.addEventListener('touchmove', (e) => {
+            // Allow scrolling on overlays (upgrade screen, shop, pause menu)
+            const target = e.target;
+            if (target.closest && target.closest('.game-overlay')) {
+                return;
+            }
             e.preventDefault();
             for (const touch of e.changedTouches) {
                 if (touch.identifier === this._touchJoystickId) {
