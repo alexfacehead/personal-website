@@ -42,8 +42,17 @@
     }
 
     body #navbar,
-    body footer {
+    body footer,
+    body .survivor-page-header,
+    body .page-header {
         display: none !important;
+    }
+
+    body {
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #050510 !important;
     }
 }
 
