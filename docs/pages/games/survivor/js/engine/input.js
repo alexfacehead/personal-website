@@ -70,6 +70,11 @@ export class Input {
         const maxKnobDist = 40; // Max pixel offset for joystick knob
 
         c.addEventListener('touchstart', (e) => {
+            // Don't prevent default on UI elements — they need click events
+            const target = e.target;
+            if (target.closest && (target.closest('button') || target.closest('.upgrade-card') || target.closest('.shop-item') || target.closest('.game-overlay'))) {
+                return;
+            }
             e.preventDefault();
             const rect = this.canvas.getBoundingClientRect();
 
