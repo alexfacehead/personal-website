@@ -31,9 +31,9 @@ export class Camera {
     }
 
     shake(intensity, duration) {
-        this.shakeIntensity = Math.max(this.shakeIntensity, intensity);
-        this.shakeDuration = Math.max(this.shakeDuration, duration);
-        this.shakeTimer = this.shakeDuration;
+        this.shakeIntensity = intensity;
+        this.shakeDuration = duration;
+        this.shakeTimer = duration;
     }
 
     triggerSlowMo(scale, duration) {
