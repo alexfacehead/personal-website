@@ -1,5 +1,10 @@
 /* Void Survivors — Game-specific styles */
 
+/* Prevent double-tap-to-zoom globally (iOS Safari ignores user-scalable=no) */
+* {
+    touch-action: manipulation;
+}
+
 /* Prevent scroll/zoom on mobile when game is active */
 /* Mobile-only: lock body during gameplay */
 @media (max-width: 768px) {
