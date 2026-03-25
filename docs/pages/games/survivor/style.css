@@ -1,17 +1,20 @@
 /* Void Survivors — Game-specific styles */
 
 /* Prevent scroll/zoom on mobile when game is active */
-body.game-active {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
-    touch-action: none !important;
-    -webkit-overflow-scrolling: auto !important;
-}
+/* Mobile-only: lock body during gameplay */
+@media (max-width: 768px) {
+    body.game-active {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+        height: 100% !important;
+        touch-action: none !important;
+        -webkit-overflow-scrolling: auto !important;
+    }
 
-body.game-active html {
-    overflow: hidden !important;
+    body.game-active html {
+        overflow: hidden !important;
+    }
 }
 
 /* On mobile: hide page chrome entirely, game fills viewport */
