@@ -91,6 +91,9 @@
     align-items: center;
     justify-content: center;
     background: rgba(5, 5, 16, 0.85);
+    touch-action: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     backdrop-filter: blur(4px);
     z-index: 10;
     transition: opacity 0.3s ease;
@@ -167,6 +170,10 @@
     text-align: center;
     width: 90%;
     max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
 }
 
 .levelup-title {
@@ -366,6 +373,13 @@
     z-index: 15;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+}
+
+#shop-items,
+.shop-content,
+.pause-weapons-list {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Show touch controls on touch devices */
