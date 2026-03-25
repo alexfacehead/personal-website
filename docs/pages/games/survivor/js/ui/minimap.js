@@ -7,7 +7,7 @@ export class Minimap {
         this.padding = 12;
     }
 
-    render(ctx, renderer, player, enemies) {
+    render(ctx, renderer, player, enemies, obelisk) {
         const w = renderer.w;
         const h = renderer.h;
         const s = this.size;
@@ -50,6 +50,38 @@ export class Minimap {
                 ctx.fillRect(dotX - 1, dotY - 1, 2, 2);
             }
         });
+
+        // Obelisk indicator
+        if (obelisk && !obelisk.activated) {
+            const odx = (obelisk.x - player.x) / this.scale;
+            const ody = (obelisk.y - player.y) / this.scale;
+            const halfS = s / 2;
+
+            // Clamp to minimap edge if off-screen
+            let obX = centerX + odx;
+            let obY = centerY + ody;
+            const inside = Math.abs(odx) <= halfS && Math.abs(ody) <= halfS;
+
+            if (!inside) {
+                // Project to edge as a directional indicator
+                const angle = Math.atan2(ody, odx);
+                const edgeDist = halfS - 4;
+                obX = centerX + Math.cos(angle) * edgeDist;
+                obY = centerY + Math.sin(angle) * edgeDist;
+            }
+
+            // Pulsing diamond
+            const pulse = Math.sin(performance.now() * 0.004) * 0.3 + 0.7;
+            ctx.save();
+            ctx.translate(obX, obY);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillStyle = `rgba(167,139,250,${pulse})`;
+            ctx.fillRect(-4, -4, 8, 8);
+            ctx.strokeStyle = `rgba(167,139,250,${pulse * 0.5})`;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(-6, -6, 12, 12);
+            ctx.restore();
+        }
 
         // Player dot (center, bright)
         ctx.fillStyle = '#a855f7';

@@ -874,7 +874,7 @@ class Game {
         if (this.state === STATE.PLAYING || this.state === STATE.LEVEL_UP) {
             this.renderer.beginScreenSpace();
             this.hud.render(ctx, this.renderer, this.player, this.waveSystem, this.fps, this.metaSystem.getCoins(), this.weaponManager);
-            this.minimap.render(ctx, this.renderer, this.player, this.enemyPool);
+            this.minimap.render(ctx, this.renderer, this.player, this.enemyPool, this.obelisk);
 
             // Damage vignette — red screen-edge flash
             if (this.player.damageFlashTimer > 0) {
