@@ -35,7 +35,7 @@ export class Input {
                 if (document.body.classList.contains('game-active')) {
                     // Allow touches on game UI buttons (upgrade choices, etc.)
                     const target = e.target;
-                    if (target.closest && (target.closest('button') || target.closest('.upgrade-card') || target.closest('.shop-item'))) {
+                    if (target.closest && (target.closest('button') || target.closest('.levelup-card') || target.closest('.shop-item') || target.closest('.game-overlay'))) {
                         return;
                     }
                     e.preventDefault();
@@ -72,7 +72,7 @@ export class Input {
         c.addEventListener('touchstart', (e) => {
             // Don't prevent default on UI elements — they need click events
             const target = e.target;
-            if (target.closest && (target.closest('button') || target.closest('.upgrade-card') || target.closest('.shop-item') || target.closest('.game-overlay'))) {
+            if (target.closest && (target.closest('button') || target.closest('.levelup-card') || target.closest('.shop-item') || target.closest('.game-overlay'))) {
                 return;
             }
             e.preventDefault();
