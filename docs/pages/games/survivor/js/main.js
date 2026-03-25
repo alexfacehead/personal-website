@@ -103,6 +103,20 @@ class Game {
         document.getElementById('shop-btn').addEventListener('click', () => this.menus.showShop(this.metaSystem));
         document.getElementById('shop-back-btn').addEventListener('click', () => this.menus.showTitle(this.metaSystem));
 
+        // Mobile pause button
+        const pauseBtn = document.getElementById('touch-pause-btn');
+        if (pauseBtn) {
+            pauseBtn.addEventListener('click', () => {
+                if (this.state === STATE.PLAYING) {
+                    this.state = STATE.PAUSED;
+                    this.accumulator = 0;
+                    this.menus.showPause(this.weaponManager, this.player);
+                } else if (this.state === STATE.PAUSED) {
+                    this._resume();
+                }
+            });
+        }
+
         // Audio init on first interaction
         const initAudio = () => {
             this.audio.init();

@@ -86,12 +86,12 @@ export class HUD {
         ctx.textBaseline = 'middle';
         ctx.fillText(`${Math.ceil(player.hp)}/${player.maxHp}`, hpX + hpBarW / 2, hpY + hpBarH / 2);
 
-        // --- Level (next to HP) ---
+        // --- Level (below HP bar) ---
         ctx.fillStyle = '#fbbf24';
-        ctx.font = "bold 14px 'JetBrains Mono', monospace";
+        ctx.font = "bold 11px 'JetBrains Mono', monospace";
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        ctx.fillText(`LV ${player.level}`, hpX + hpBarW + 10, hpY);
+        ctx.fillText(`LV ${player.level}`, hpX, hpY + hpBarH + 4);
 
         // --- Timer (top center) ---
         ctx.fillStyle = '#ccc';
@@ -124,7 +124,9 @@ export class HUD {
 
         // --- XP Bar (bottom, full width) ---
         const xpBarH = 6;
-        const xpY = h - xpBarH;
+        const isMobileXp = ('ontouchstart' in window) && w < 900;
+        const xpBottomSafe = isMobileXp ? 28 : 0;
+        const xpY = h - xpBarH - xpBottomSafe;
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
         ctx.fillRect(0, xpY, w, xpBarH);
 
@@ -136,7 +138,10 @@ export class HUD {
         const slotSize = 32;
         const slotGap = 4;
         const maxSlots = player.maxWeapons || 6;
-        const barY = h - xpBarH - slotSize - pad - 4;
+        // Extra padding on mobile for Safari toolbar / safe area
+        const isMobile = ('ontouchstart' in window) && w < 900;
+        const bottomSafe = isMobile ? 28 : 0;
+        const barY = h - xpBarH - slotSize - pad - 4 - bottomSafe;
         const barX = pad;
 
         // Get weapon info from manager
