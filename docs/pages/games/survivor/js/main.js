@@ -662,8 +662,8 @@ class Game {
                 initPickup(p, gemType, enemy.x, enemy.y);
             }
 
-            // Rare health orb drop (0.75%)
-            if (Math.random() < 0.0075 && this.pickupPool.count < MAX_PICKUPS) {
+            // Health orb drop (1.125%)
+            if (Math.random() < 0.01125 && this.pickupPool.count < MAX_PICKUPS) {
                 const p = this.pickupPool.acquire();
                 initPickup(p, 'health', enemy.x, enemy.y);
             }
