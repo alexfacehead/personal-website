@@ -302,7 +302,6 @@ class Game {
                 });
                 for (let i = toClear.length - 1; i >= 0; i--) {
                     this.spatialHash.remove(toClear[i]);
-                    toClear[i].alive = false;
                     this.enemyPool.release(toClear[i]);
                 }
                 // Spawn Rainbow Watcher

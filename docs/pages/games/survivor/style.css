@@ -96,7 +96,7 @@
     align-items: center;
     justify-content: center;
     background: rgba(5, 5, 16, 0.85);
-    touch-action: auto;
+    touch-action: manipulation;
     overflow: hidden;
     backdrop-filter: blur(4px);
     z-index: 10;
